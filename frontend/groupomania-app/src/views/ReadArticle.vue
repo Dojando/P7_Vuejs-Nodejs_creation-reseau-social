@@ -27,7 +27,16 @@
     </header>
 
     <main class="container">
-      
+      <article>
+        <b-card class="contenu_article mx-auto" border-variant="secondary">
+          <template v-slot:header>
+            <h2>Titre de l'article</h2>
+            <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
+          </template>
+          <p class="text_article">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque inventore quam earum? Adipisci dolorem illo aliquid minus incidunt, molestias quas, tempore nisi deserunt neque ipsam quis quibusdam placeat animi doloribus.<br><br>Lorem ipsum dolor sit amet.<br>Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo, dignissimos!<br>Lorem ipsum dolor sit.
+          </p>
+        </b-card>
+      </article>
     </main>
 
     <footer class="footer">
@@ -59,6 +68,7 @@
   flex-direction: column;
 }
 
+/* Header */
 .header {
   width: 100%;
   height: 60px;
@@ -104,18 +114,24 @@
   margin-right: 10px;
 }
 
-.container * {
-  margin-bottom: 5px;
-}
-
-.form_article p, .form_article div {
+/* Body */
+article h2 {
   margin-bottom: 20px;
 }
 
-textarea.form-control {
-  height: 300px;
+.contenu_article {
+  max-width: 720px;
 }
 
+.contenu_article h2 {
+  font-weight: bold;
+}
+
+.text_article {
+  font-size: 1.2em;
+}
+
+/* Footer */
 .footer {
   width: 100%;
   height: 50px;
@@ -128,6 +144,7 @@ textarea.form-control {
   bottom: 0px;
 }
 
+/* Media queries */
 @media screen and (max-width: 575px) {
   .box_retour {
     flex: 2;

@@ -27,7 +27,7 @@
     </header>
 
     <main class="container">
-      <form class="form_article">
+      <form class="form_article mx-auto">
         <p class="h2">Publiez un article</p>
         <div class="form-group">
           <label for="titreArticle">Titre de l'article</label>
@@ -121,12 +121,12 @@
   margin-right: 10px;
 }
 
-.container * {
-  margin-bottom: 5px;
+.form_article {
+  max-width: 720px;
 }
 
 .form_article p, .form_article div {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 textarea.form-control {

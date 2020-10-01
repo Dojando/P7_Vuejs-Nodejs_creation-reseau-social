@@ -4,6 +4,7 @@ import auth from '../views/auth.vue'
 import ArticleList from '../views/ArticleList.vue'
 import PageCompte from '../views/Compte.vue'
 import CreationArticle from '../views/CreateArticle.vue'
+import LireArticle from '../views/ReadArticle.vue'
 
 Vue.use(VueRouter)
 
@@ -27,6 +28,11 @@ const routes = [
     path: '/Creation',
     name: 'CreationArticle',
     component: CreationArticle
+  },
+  {
+    path: '/Article',
+    name: 'LireArticle',
+    component: LireArticle
   },
 ]
 

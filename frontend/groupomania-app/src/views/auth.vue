@@ -7,11 +7,13 @@
         <button @click="component = 'LoginForm'" type="button" class="btn btn-secondary">Connexion</button>
       </nav>
     </header>
-    <div class="main">
+
+    <main class="container">
       <component v-bind:is="component"></component>
-    </div>
+    </main>
+
     <footer class="footer">
-      <p>Mentions légales</p>
+      <p>© 2020 Groupomania</p>
     </footer>
   </div>
 </template>
@@ -50,8 +52,9 @@
 .header_auth {
   width: 100%;
   height: 60px;
-  background-color: rgb(228, 214, 196);
-  color: #2c3e50;
+  margin-bottom: 90px;
+  background-color: rgb(199, 199, 199);
+  box-shadow: 0px 2px 5px 0px #8C8C8C;
   text-align: center;
   display: flex;
   justify-content: space-between;
@@ -72,22 +75,25 @@
   font-size: 1.2em;
 }
 
-.main {
+.container {
   display: flex;
-  padding-top: 90px;
-  width: 100%;
   justify-content: center;
 }
 
+/* Footer */
 .footer {
   width: 100%;
   height: 50px;
-  background-color: rgb(228, 214, 196);
+  background-color: rgb(199, 199, 199);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.9em;
   position: absolute;
   bottom: 0px;
 }
 
-@media screen and (max-width: 576px) {
+@media screen and (max-width: 575px) {
   .header_auth {
     justify-content: center;
   }

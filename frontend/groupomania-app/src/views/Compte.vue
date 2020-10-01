@@ -5,8 +5,8 @@
         <b-button class="btn_article" variant="primary">Poster un article</b-button>
       </div>
       
-      <div class="box">
-          <img class="d-none d-sm-block" src="../assets/icon-left-font-monochrome-black.png" alt="logo et nom de l'application">
+      <div class="box box_img d-none d-sm-block text-center">
+          <img src="../assets/icon-left-font-monochrome-black.png" alt="logo et nom de l'application">
       </div>
       
       <div class="box box_drop">
@@ -28,7 +28,7 @@
     </header>
 
     <div class="container">
-      <b-card border-variant="secondary" header="Détails du compte" header-border-variant="secondary">
+      <b-card class="details_compte mx-auto" border-variant="secondary" header="Détails du compte" header-border-variant="secondary">
         <b-list-group flush>
           <b-list-group-item><strong>Prenom : </strong>John</b-list-group-item>
           <b-list-group-item><strong>Nom : </strong>Smith</b-list-group-item>
@@ -88,6 +88,10 @@
   justify-content: left;  
 }
 
+.box_img {
+  align-self: center;
+}
+
 .box_drop {
   justify-content: flex-end;  
 }
@@ -113,6 +117,10 @@
   margin-bottom: 5px;
 }
 
+.details_compte {
+  max-width: 720px;
+}
+
 .footer {
   width: 100%;
   height: 50px;
@@ -123,5 +131,11 @@
   font-size: 0.9em;
   position: absolute;
   bottom: 0px;
+}
+
+@media screen and (max-width: 575px) {
+  .box_article {
+    flex: 2;
+  }
 }
 </style>
