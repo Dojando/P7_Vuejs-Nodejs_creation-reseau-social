@@ -22,13 +22,17 @@
     </header>
 
     <div class="container">
-      <b-card title="Titre d'article" sub-title="Publié par John Smith" border-variant="secondary">
+      <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
+        <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
       </b-card>
-      <b-card title="Titre d'article" sub-title="Publié par John Smith" border-variant="secondary">
+      <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
+        <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
       </b-card>
-      <b-card title="Titre d'article" sub-title="Publié par John Smith" border-variant="secondary">
+      <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
+        <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
       </b-card>
-      <b-card title="Titre d'article" sub-title="Publié par John Smith" border-variant="secondary">
+      <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
+        <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
       </b-card>
     </div>
     
@@ -94,6 +98,10 @@
 
 .container * {
   margin-bottom: 5px;
+}
+
+.info_article {
+  color:#d6d8db;
 }
 
 .footer {

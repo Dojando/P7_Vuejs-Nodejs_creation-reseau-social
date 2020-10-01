@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import auth from '../views/auth.vue'
 import ArticleList from '../views/ArticleList.vue'
 import PageCompte from '../views/Compte.vue'
+import CreationArticle from '../views/CreateArticle.vue'
 
 Vue.use(VueRouter)
 
@@ -21,6 +22,11 @@ const routes = [
     path: '/Compte',
     name: 'Compte',
     component: PageCompte
+  },
+  {
+    path: '/Creation',
+    name: 'CreationArticle',
+    component: CreationArticle
   },
 ]
 
