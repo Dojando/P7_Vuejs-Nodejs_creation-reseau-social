@@ -1,12 +1,16 @@
 <template>
   <div id="app">
     <header class="header">
-      <div class="box box_article">
-        <b-button class="btn_article" variant="primary">Poster un article</b-button>
+      <div class="box box_retour">
+        <router-link to="/accueil">
+          <b-button class="btn_accueil" variant="secondary">Retour à l'accueil</b-button>
+        </router-link>
       </div>
       
       <div class="box box_img d-none d-sm-block text-center">
+        <router-link to="/accueil">
           <img src="../assets/icon-left-font-monochrome-black.png" alt="logo et nom de l'application">
+        </router-link>
       </div>
       
       <div class="box box_drop">
@@ -21,7 +25,9 @@
           <b-dropdown-text>John Smith</b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-item>Déconnexion</b-dropdown-item>
-          <b-dropdown-item>Détails du compte</b-dropdown-item>
+          <b-dropdown-item>
+            <router-link to="/compte">Détails du compte</router-link>
+          </b-dropdown-item>
         </b-dropdown>
       </div>
      
@@ -66,6 +72,7 @@
   font-family: Avenir, Helvetica, Arial, sans-serif;
   display: flex;
   flex-direction: column;
+  margin-bottom: 100px;
 }
 
 .header {
@@ -84,7 +91,7 @@
   align-items: center;
 }
 
-.box_article {
+.box_retour {
   justify-content: left;  
 }
 
@@ -105,7 +112,7 @@
   margin-right: 5px;
 }
 
-.btn_article {
+.btn_accueil {
   margin-left: 10px;
 }
 
@@ -129,7 +136,7 @@
   justify-content: center;
   align-items: center;
   font-size: 0.9em;
-  position: absolute;
+  position: fixed;
   bottom: 0px;
 }
 

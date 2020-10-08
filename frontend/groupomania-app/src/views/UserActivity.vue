@@ -1,9 +1,9 @@
 <template>
   <div id="app">
     <header class="header">
-      <div class="box box_article">
-        <router-link to="/creation">
-          <b-button class="btn_article" variant="primary">Poster un article</b-button>
+      <div class="box box_retour">
+        <router-link to="/accueil">
+          <b-button class="btn_accueil" variant="secondary">Retour à l'accueil</b-button>
         </router-link>
       </div>
       
@@ -32,29 +32,29 @@
       </div>
     </header>
 
-    <div class="container">
-      <router-link to="/article">
-        <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
-          <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
+    <main class="container">
+      <b-card class="activite_utilisateur mx-auto" border-variant="secondary">
+        <template v-slot:header>
+          <h2>Activité de l'utilisateur John Smith</h2>
+        </template>
+
+        <router-link to="/article">
+          <b-card class="posts" bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
+            <b-card-text class="small info_article">Article publié par John Smith le 00/00/00</b-card-text>
+          </b-card>
+        </router-link>
+
+        <b-card class="mx-auto posts" border-variant="secondary">
+          <template v-slot:header>
+            <div>
+              <b-card-text class="small info_article">Commentaire publié par John Smith le 00/00/00 dans l'article ...</b-card-text>
+            </div>
+          </template>
+          <p class="small">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque voluptatum eaque ab asperiores eveniet, deserunt molestiae placeat maiores sequi earum autem iste quia esse ad necessitatibus adipisci hic, deleniti soluta pariatur! Explicabo, ea fugiat! Deleniti consectetur esse quis maiores repellendus totam, perspiciatis nemo repudiandae sint porro quaerat ullam nam nostrum.
+          </p>
         </b-card>
-      </router-link>
-      <router-link to="/article">
-        <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
-          <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
-        </b-card>
-      </router-link>
-      <router-link to="/article">
-        <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
-          <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
-        </b-card>
-      </router-link>
-      <router-link to="/article">
-        <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
-          <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
-        </b-card>
-      </router-link>
-    </div>
-    
+      </b-card>
+    </main>
 
     <footer class="footer">
       <p>© 2020 Groupomania</p>
@@ -64,6 +64,11 @@
 
 <script>
   export default {
+  data() {
+		return {
+
+		}
+	}
 }
 </script>
 
@@ -81,7 +86,7 @@
   margin-bottom: 100px;
 }
 
-/* header */
+/* Header */
 .header {
   width: 100%;
   height: 60px;
@@ -91,6 +96,10 @@
   margin-bottom: 50px;
 }
 
+.header img {
+  width: 200px;
+}
+
 .box {
   flex: 1;
   display: flex;
@@ -98,7 +107,7 @@
   align-items: center;
 }
 
-.box_article {
+.box_retour {
   justify-content: left;  
 }
 
@@ -106,8 +115,12 @@
   align-self: center;
 }
 
-.header img {
-  width: 200px;
+.box_drop {
+  justify-content: flex-end;  
+}
+
+.btn_accueil {
+  margin-left: 10px;
 }
 
 .bi-person-circle {
@@ -115,32 +128,26 @@
   margin-right: 5px;
 }
 
-.btn_article {
-  margin-left: 10px;
-}
-
-.box_drop {
-  justify-content: flex-end;  
-}
-
 .btn_compte {
   margin-right: 10px;
 }
 
-/* body */
-.container * {
-  margin-bottom: 5px;
+/* Body */
+.activite_utilisateur {
+  max-width: 720px;
+  margin-bottom: 50px;
 }
 
-.container {
-  max-width: 1140px;
+
+.button_delete {
+  margin-left: 10px;
 }
 
-.info_article {
-  color:#d6d8db;
+.posts {
+  margin-bottom: 30px;
 }
 
-/* footer */
+/* Footer */
 .footer {
   width: 100%;
   height: 50px;
@@ -153,9 +160,9 @@
   bottom: 0px;
 }
 
-/* media queries */
+/* Media queries */
 @media screen and (max-width: 575px) {
-  .box_article {
+  .box_retour {
     flex: 2;
   }
 }

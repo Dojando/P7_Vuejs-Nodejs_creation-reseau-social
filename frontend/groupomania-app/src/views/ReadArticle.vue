@@ -2,11 +2,15 @@
   <div id="app">
     <header class="header">
       <div class="box box_retour">
-        <b-button class="btn_accueil" variant="primary">Retour à l'accueil</b-button>
+        <router-link to="/accueil">
+          <b-button class="btn_accueil" variant="secondary">Retour à l'accueil</b-button>
+        </router-link>
       </div>
       
       <div class="box box_img d-none d-sm-block text-center">
+        <router-link to="/accueil">
           <img src="../assets/icon-left-font-monochrome-black.png" alt="logo et nom de l'application">
+        </router-link>
       </div>
       
       <div class="box box_drop">
@@ -21,7 +25,9 @@
           <b-dropdown-text>John Smith</b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-item>Déconnexion</b-dropdown-item>
-          <b-dropdown-item>Détails du compte</b-dropdown-item>
+          <b-dropdown-item>
+            <router-link to="/compte">Détails du compte</router-link>
+          </b-dropdown-item>
         </b-dropdown>
       </div>
     </header>
@@ -31,12 +37,89 @@
         <b-card class="contenu_article mx-auto" border-variant="secondary">
           <template v-slot:header>
             <h2>Titre de l'article</h2>
-            <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
           </template>
           <p class="text_article">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque inventore quam earum? Adipisci dolorem illo aliquid minus incidunt, molestias quas, tempore nisi deserunt neque ipsam quis quibusdam placeat animi doloribus.<br><br>Lorem ipsum dolor sit amet.<br>Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo, dignissimos!<br>Lorem ipsum dolor sit.
           </p>
+          <template v-slot:footer>
+            <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
+            <b-button variant="outline-secondary">Copier le lien de l'article</b-button>
+          </template>
         </b-card>
       </article>
+
+      <b-card class="espace_commentaire mx-auto" border-variant="secondary">
+        <template v-slot:header>
+          <h3>Commentaires</h3>
+        </template>
+
+        <b-card class="mx-auto text_zone" border-variant="secondary">
+          <template v-slot:header>
+            <p class="h5">Postez un commentaire</p>
+          </template>
+          <form class="form_article mx-auto">
+            <div class="form-group">
+              <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
+              <div class="invalid-feedback">
+                Ecrivez quelque chose dans l'article
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Poster</button>
+          </form>
+        </b-card>
+        
+        <b-card class="mx-auto" border-variant="secondary">
+          <template v-slot:header>
+            <div class="comment_header">
+              <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
+              <div class="comment_button">
+                <b-button v-b-toggle.collapse-1 size="sm">Répondre</b-button>
+                <b-button class="button_delete" variant="danger" size="sm">Supprimer</b-button>
+              </div>
+            </div>
+          </template>
+          <p class="small">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque voluptatum eaque ab asperiores eveniet, deserunt molestiae placeat maiores sequi earum autem iste quia esse ad necessitatibus adipisci hic, deleniti soluta pariatur! Explicabo, ea fugiat! Deleniti consectetur esse quis maiores repellendus totam, perspiciatis nemo repudiandae sint porro quaerat ullam nam nostrum.
+          </p>
+        </b-card>
+        <b-collapse id="collapse-1" class="mt-2">
+          <b-card>
+            <form class="form_article mx-auto">
+              <div class="form-group">
+                <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
+                <div class="invalid-feedback">
+                  Ecrivez quelque chose dans l'article
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">Poster</button>
+            </form>
+          </b-card>
+        </b-collapse>
+        <b-card style="width: 90%;margin-top:10px" class="ml-auto" border-variant="secondary">
+          <template v-slot:header>
+            <div class="comment_header">
+              <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
+              <div class="comment_button">
+                <b-button v-b-toggle.collapse-1-rep size="sm">Répondre</b-button>
+                <b-button class="button_delete" variant="danger" size="sm">Supprimer</b-button>
+              </div>
+            </div>
+          </template>
+          <p class="small">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque voluptatum eaque ab asperiores eveniet, deserunt molestiae placeat maiores sequi earum autem iste quia esse ad necessitatibus adipisci hic, deleniti soluta pariatur! Explicabo, ea fugiat! Deleniti consectetur esse quis maiores repellendus totam, perspiciatis nemo repudiandae sint porro quaerat ullam nam nostrum.
+          </p>
+        </b-card>
+        <b-collapse id="collapse-1-rep" class="mt-2">
+          <b-card>
+            <form class="form_article mx-auto">
+              <div class="form-group">
+                <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
+                <div class="invalid-feedback">
+                  Ecrivez quelque chose dans l'article
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">Poster</button>
+            </form>
+          </b-card>
+        </b-collapse>
+      </b-card>
     </main>
 
     <footer class="footer">
@@ -46,7 +129,13 @@
 </template>
 
 <script>
+import Editor from '@tinymce/tinymce-vue'
+
   export default {
+	name: 'App',
+	components: {
+    Editor
+  },
   data() {
 		return {
 			component:"LoginForm"
@@ -66,6 +155,7 @@
   font-family: Avenir, Helvetica, Arial, sans-serif;
   display: flex;
   flex-direction: column;
+  margin-bottom: 100px;
 }
 
 /* Header */
@@ -121,6 +211,11 @@ article h2 {
 
 .contenu_article {
   max-width: 720px;
+  margin-bottom: 50px;
+}
+
+.espace_commentaire {
+  max-width: 720px;
 }
 
 .contenu_article h2 {
@@ -129,6 +224,26 @@ article h2 {
 
 .text_article {
   font-size: 1.2em;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.text_zone {
+  margin-bottom: 30px;
+}
+
+.comment_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.button_delete {
+  margin-left: 10px;
 }
 
 /* Footer */
@@ -140,7 +255,7 @@ article h2 {
   justify-content: center;
   align-items: center;
   font-size: 0.9em;
-  position: absolute;
+  position: fixed;
   bottom: 0px;
 }
 

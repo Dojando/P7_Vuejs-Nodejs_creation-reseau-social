@@ -47,6 +47,7 @@
   font-family: Avenir, Helvetica, Arial, sans-serif;
   display: flex;
   flex-direction: column;
+  margin-bottom: 100px;
 }
 
 .header_auth {
@@ -89,7 +90,7 @@
   justify-content: center;
   align-items: center;
   font-size: 0.9em;
-  position: absolute;
+  position: fixed;
   bottom: 0px;
 }
 

@@ -5,6 +5,7 @@ import ArticleList from '../views/ArticleList.vue'
 import PageCompte from '../views/Compte.vue'
 import CreationArticle from '../views/CreateArticle.vue'
 import LireArticle from '../views/ReadArticle.vue'
+import UserActivity from '../views/UserActivity.vue'
 
 Vue.use(VueRouter)
 
@@ -33,6 +34,11 @@ const routes = [
     path: '/Article',
     name: 'LireArticle',
     component: LireArticle
+  },
+  {
+    path: '/utilisateur',
+    name: 'UserActivity',
+    component: UserActivity
   },
 ]
 
