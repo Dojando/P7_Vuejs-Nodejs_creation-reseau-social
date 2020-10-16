@@ -34,19 +34,19 @@
 
     <main class="container">
       <form class="form_article mx-auto">
-        <p class="h2">Publiez un article</p>
+        <h2>Publiez un article</h2>
         <div class="form-group">
           <label for="titreArticle">Titre de l'article</label>
           <input type="text" class="form-control" id="titreArticle" placeholder="Donnez un titre à votre article" required>
           <div class="invalid-feedback">
-            Donnez un titre à votre article
+            Donnez un titre valide à votre article
           </div>
         </div>
         <div class="form-group">
         <label for="texteArticle">Contenu de l'article</label>
           <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
-          <div class="invalid-feedback">
-            Ecrivez quelque chose dans l'article
+          <div v-if="contenu_article == false">
+            Ecrivez un contenu valide dans l'article
           </div>
         </div>
         <button type="submit" class="btn btn-primary">Poster</button>
@@ -137,7 +137,7 @@ import Editor from '@tinymce/tinymce-vue'
   max-width: 720px;
 }
 
-.form_article p, .form_article div {
+.form_article h2, .form_article div {
   margin-bottom: 25px;
 }
 

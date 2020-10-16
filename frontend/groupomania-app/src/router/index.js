@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import auth from '../views/auth.vue'
+import connexion from '../views/Connexion.vue'
+import inscription from '../views/Inscription.vue'
 import ArticleList from '../views/ArticleList.vue'
 import PageCompte from '../views/Compte.vue'
 import CreationArticle from '../views/CreateArticle.vue'
@@ -11,27 +12,32 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/',
-    name: 'Auth',
-    component: auth
+    path: '/connexion',
+    name: 'Connexion',
+    component: connexion
   },
   {
-    path: '/Accueil',
+    path: '/inscription',
+    name: 'Inscription',
+    component: inscription
+  },
+  {
+    path: '/accueil',
     name: 'Accueil',
     component: ArticleList
   },
   {
-    path: '/Compte',
+    path: '/compte',
     name: 'Compte',
     component: PageCompte
   },
   {
-    path: '/Creation',
+    path: '/creation',
     name: 'CreationArticle',
     component: CreationArticle
   },
   {
-    path: '/Article',
+    path: '/article',
     name: 'LireArticle',
     component: LireArticle
   },

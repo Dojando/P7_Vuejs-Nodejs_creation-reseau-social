@@ -32,30 +32,11 @@
       </div>
     </header>
 
-    <div class="container">
-      <router-link to="/article">
-        <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
-          <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
-        </b-card>
-      </router-link>
-      <router-link to="/article">
-        <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
-          <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
-        </b-card>
-      </router-link>
-      <router-link to="/article">
-        <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
-          <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
-        </b-card>
-      </router-link>
-      <router-link to="/article">
-        <b-card bg-variant="secondary" text-variant="white" title="Titre d'article" border-variant="secondary">
-          <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
-        </b-card>
-      </router-link>
+    <!-- liste d'articles -->
+    <div class="container mb-2" v-for="item in apiResponse" :key="item.id">
+      <articlepreview :titre="item.titre" :auteur="item.auteur" :date="item.date"></articlepreview>
     </div>
     
-
     <footer class="footer">
       <p>© 2020 Groupomania</p>
     </footer>
@@ -63,8 +44,22 @@
 </template>
 
 <script>
+  import articlepreview from "../components/articlePreview"
+
   export default {
-}
+    components: {
+      articlepreview
+    },
+    data() {
+      return {
+        apiResponse: [
+          { titre: 'titre article 1', auteur: 'John Smith', date: '05/12/99', id: 1 },
+          { titre: 'titre article 2', auteur: 'John Carmack', date: '15/05/2020', id: 2 },
+          { titre: 'titre article 3', auteur: 'John doe', date: '25/06/41', id: 3 }
+        ]
+      }
+    },
+	}
 </script>
 
 <style scoped>
@@ -128,10 +123,6 @@
 }
 
 /* body */
-.container * {
-  margin-bottom: 5px;
-}
-
 .container {
   max-width: 1140px;
 }

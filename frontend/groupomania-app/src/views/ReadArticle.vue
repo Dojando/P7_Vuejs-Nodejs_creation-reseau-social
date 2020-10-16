@@ -56,15 +56,8 @@
           <template v-slot:header>
             <p class="h5">Postez un commentaire</p>
           </template>
-          <form class="form_article mx-auto">
-            <div class="form-group">
-              <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
-              <div class="invalid-feedback">
-                Ecrivez quelque chose dans l'article
-              </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Poster</button>
-          </form>
+            <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}" v-model="formdata"></editor>
+            <button type="submit" class="btn btn-primary btn_commentaire">Poster</button>
         </b-card>
         
         <b-card class="mx-auto" border-variant="secondary">
@@ -138,7 +131,7 @@ import Editor from '@tinymce/tinymce-vue'
   },
   data() {
 		return {
-			component:"LoginForm"
+			formdata: "",
 		}
 	}
 }
@@ -244,6 +237,10 @@ article h2 {
 
 .button_delete {
   margin-left: 10px;
+}
+
+.btn_commentaire {
+  margin-top: 15px;
 }
 
 /* Footer */
