@@ -13,24 +13,27 @@
         <p class="h2">Connexion</p>
         <!-- champ email -->
         <div class="form-group">
-          <label for="loginEmail">Adresse Email</label>
-          <input v-model="login_email" type="email" class="form-control" id="loginEmail" placeholder="Votre Email" required>
-            <!-- message d'erreur -->
-          <div class="invalid-feedback">
-              Email invalide
-          </div>
+          <label for="email">Adresse Email</label>
+          <input v-model="email" type="email" class="form-control" id="email" placeholder="Votre Email" required>
+          <!-- message d'erreur -->
+          <b-card-text v-show="emailValue == false" class="small text-danger info_article">
+            Champ vide
+          </b-card-text>
         </div>
         <!-- champ password -->
         <div class="form-group">
-          <label for="loginPassword">Mot de passe</label>
-          <input v-model="login_password" type="password" class="form-control" id="loginPassword" placeholder="Votre mot de passe" required>
+          <label for="password">Mot de passe</label>
+          <input v-model="password" type="password" class="form-control" id="password" placeholder="Votre mot de passe" required>
             <!-- message d'erreur -->
-          <div class="invalid-feedback">
-            mot de passe invalide
-          </div>
+          <b-card-text v-show="pwdValue == false" class="small text-danger info_article">
+            Champ vide
+          </b-card-text>
         </div>
         <!-- bouton de validation -->
         <button @click="connexion()" class="btn btn-primary">Me connecter</button>
+        <b-card-text v-show="errorMessage != null" class="small text-danger mt-2">
+          {{ errorMessage }}
+        </b-card-text>
       </form>
     </main>
 
@@ -41,31 +44,50 @@
 </template>
 
 <script>
+  import axios from 'axios';
+
   export default {
 	name: 'App',
   data() {
 		return {
-      login_data: {
-        login_email: "",
-        login_password:""
-      },
-      options: {},
-      methods: {
-        connexion: function() {
-          this.options = {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: this.login_data
-          }
-          fetch('/api/auth/login', this.options)
-            .then(function(response) {
-              return response;
-            })
-        }
+      email: "",
+      password:"",
+      emailValue: null,
+      pwdValue: null,
+      errorMessage: null,
+    }
+  },
+  methods: {
+    connexion() {
+      let valid = true;
+      this.errorMessage = null;
+      this.emailValue = null;
+      this.pwdValue = null;
+      if (this.email.length == 0) {
+        this.emailValue = false;
+        valid = false;
       }
-		}
+      if (this.password.length == 0) {
+        this.pwdValue = false;
+        valid = false;
+      }
+      if (valid == true) {
+        axios.post('http://localhost:3000/api/auth/login', {
+          email: this.email,
+          password: this.password
+        })
+        .then((response) => {
+          console.log(response);
+          this.$router.push('accueil');
+        })
+        .catch((error) => {
+          console.log(error);
+          this.errorMessage = error.response.data.message;
+        });
+      }
+    }
 	}
-}
+  }
 </script>
 
 <style scoped>

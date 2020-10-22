@@ -13,51 +13,61 @@
         <p class="h2">Inscription</p>
         <!-- champ prénom -->
         <div class="form-group">
-            <label for="Prenom">Prénom</label>
-            <input type="text" class="form-control" id="Prenom" placeholder="Votre Prénom" required>
-            <!-- message d'erreur -->
-            <div class="invalid-feedback">
-                Prénom invalide
-            </div>
+          <label for="Prenom">Prénom</label>
+          <input v-model="prenom" type="text" class="form-control" id="Prenom" placeholder="Votre Prénom" required>
+          <!-- message d'erreur -->
+          <b-card-text v-show="prenomValue == false" class="small text-danger info_article">
+            Prenom invalide
+          </b-card-text>
         </div>
         <!-- champ nom -->
         <div class="form-group">
-            <label for="Nom">Nom</label>
-            <input type="text" class="form-control" id="Nom" placeholder="Votre Nom" required>
-            <!-- message d'erreur -->
-            <div class="invalid-feedback">
-                Nom invalide
-            </div>
+          <label for="Nom">Nom</label>
+          <input v-model="nom" type="text" class="form-control" id="Nom" placeholder="Votre Nom" required>
+          <!-- message d'erreur -->
+          <b-card-text v-show="nomValue == false" class="small text-danger info_article">
+            Nom invalide
+          </b-card-text>
         </div>
         <!-- champ email -->
         <div class="form-group">
-            <label for="signupEmail">Adresse Email</label>
-            <input type="email" class="form-control" id="signupEmail" placeholder="Votre Email" required>
-            <!-- message d'erreur -->
-            <div class="invalid-feedback">
-                Email invalide
-            </div>
+          <label for="email">Adresse Email</label>
+          <input v-model="email" type="email" class="form-control" id="email" placeholder="Votre Email" required>
+          <!-- message d'erreur -->
+          <b-card-text v-show="emailValue == false" class="small text-danger info_article">
+            Email invalide
+          </b-card-text>
         </div>
         <!-- champ password -->
         <div class="form-group">
-            <label for="signupPassword">Mot de passe</label>
-            <input type="password" class="form-control" id="signupPassword" placeholder="Votre mot de passe" required>
-            <!-- message d'erreur -->
-            <div class="invalid-feedback">
-                mot de passe invalide
-            </div>
+          <label for="password">Mot de passe</label>
+          <input v-model="password" type="password" class="form-control" id="password" placeholder="Votre mot de passe" required>
+          <!-- message d'informations -->
+          <b-form-text v-show="pwdValue != false" id="password-help-block">
+            Votre mot de passe doit contenir entre 6-50 caracters, contenir au moins une lettre majuscule, une minuscule, et un chiffre. Le mot de passe ne peut contenir que des chiffres et des lettres.
+          </b-form-text>
+          <!-- message d'erreur -->
+          <b-card-text v-show="pwdValue == false" class="small text-danger info_article">
+            Votre mot de passe doit contenir entre 6-50 caracters, contenir au moins une lettre majuscule, une minuscule, et un chiffre. Le mot de passe ne peut contenir que des chiffres et des lettres.
+          </b-card-text>
         </div>
         <!-- champ confirmation password -->
         <div class="form-group">
-            <label for="confpassword">Confirmer votre Mot de passe</label>
-            <input type="password" class="form-control" id="confpassword" placeholder="Votre mot de passe" required>
-            <!-- message d'erreur -->
-            <div class="invalid-feedback">
-                mot de passe invalide
-            </div>
+          <label for="confpassword">Confirmer votre Mot de passe</label>
+          <input v-model="confpassword" type="password" class="form-control" id="confpassword" placeholder="Votre mot de passe" required>
+          <!-- message d'erreur -->
+          <b-card-text v-show="confpwdValue == false" class="small text-danger info_article">
+            Le mot de passe ne correspond pas
+          </b-card-text>
         </div>
         <!-- bouton de validation -->
-        <button type="submit" class="btn btn-primary">M'inscrire</button>
+        <button @click="inscription()" class="btn btn-primary">M'inscrire</button>
+        <b-card-text v-show="errorMessage != null" class="small text-danger mt-2">
+          {{ errorMessage }}
+        </b-card-text>
+        <b-card-text v-show="validationMessage != null" class="small text-success mt-2">
+          {{ validationMessage }}
+        </b-card-text>
       </form>
     </main>
 
@@ -68,31 +78,72 @@
 </template>
 
 <script>
+  import axios from 'axios';
+
   export default {
 	name: 'App',
   data() {
 		return {
-      login_data: {
-        login_email: "",
-        login_password:""
-      },
-      options: {},
-      methods: {
-        connexion: function() {
-          this.options = {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: this.login_data
-          }
-          fetch('/api/auth/login', this.options)
-            .then(function(response) {
-              return response;
-            })
+      prenom: "",
+      nom: "",
+      email: "",
+      password:"",
+      confpassword:"",
+      prenomValue: null,
+      nomValue: null,
+      emailValue: null,
+      pwdValue: null,
+      confpwdValue: null,
+      errorMessage: null,
+      validationMessage: null,
+    }
+  },
+  methods: {
+    inscription() {
+      let valid = true;
+      this.errorMessage = null;
+      this.validationMessage = null;
+      const regex_nom_prenom = /^[A-Z- ]{1,100}$/i;
+      const regex_email = /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]){2,4}$/;
+      const regex_pwd = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[0-9a-zA-Z]{6,50}$/;
+      this.prenomValue = regex_nom_prenom.test(this.prenom);
+      this.nomValue = regex_nom_prenom.test(this.nom);
+      this.emailValue = regex_email.test(this.email);
+      this.pwdValue = regex_pwd.test(this.password);
+      if (this.password !== this.confpassword) {
+        this.confpwdValue = false;
+      } else {
+        this.confpwdValue = true;
+      }
+      let inputValue = [this.prenomValue, this.nomValue, this.emailValue, this.pwdValue, this.confpwdValue];
+
+      for (let i = 0; i < inputValue.length; i++) {
+        if (inputValue[i] == false) {
+          console.log(inputValue[i]);
+          valid = false;
+          return;
         }
       }
-		}
+
+      if (valid == true) {
+        axios.post('http://localhost:3000/api/auth/signup', {
+          prenom: this.prenom,
+          nom: this.nom,
+          email: this.email,
+          password: this.password
+        })
+        .then((response) => {
+          console.log(response);
+          this.validationMessage = response.data.message;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.errorMessage = error.response.data.message;
+        });    
+      }
+    }
 	}
-}
+  }
 </script>
 
 <style scoped>
