@@ -10,7 +10,6 @@ const db = mysql.createConnection({
 
 
 exports.signup = (req, res, next) => {
-  console.log(req.body);
   db.query('SELECT email FROM utilisateurs where email = ?', [req.body.email], function(error, results) {
     if (error) {
       console.log(error)
@@ -38,23 +37,29 @@ exports.login = (req, res, next) => {
       console.log(error);
     }
     if (results.length == 0) {
-      return res.status(401).json({ message: 'Utilisateur non trouvé' });
+      return res.status(401).json({ message: 'Données invalides' });
     } else {
       console.log(results);
       bcrypt.compare(password, results[0].mot_de_passe)
         .then(valid => {
-          console.log(valid);
           if (valid == false) {
-            return res.status(401).json({ message: 'Mot de passe incorrect' });
+            return res.status(401).json({ message: 'Données invalides' });
           } else {
             const token = jwt.sign(
               { 
                 userId: results[0].id,
+                prenom: results[0].prenom,
+                nom: results[0].nom,
+                email: results[0].email,
+                privilege: results[0].privilege
               },
               'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk',
             )
-            res.cookie('authcookie',token,{maxAge:2992592000,httpOnly:true});
-            res.status(201).json({ message: 'connecté' });
+            console.log(token);
+            res.cookie('authcookie',token,{
+              expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+              httpOnly:true});
+            res.status(200).json({message : 'Utilisateur connecté'});
           }
         })
         .catch(error => res.status(500).json({ error }));

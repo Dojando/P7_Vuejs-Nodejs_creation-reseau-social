@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div v-if="userAuth == true" id="app">
     <header class="header">
       <div class="box box_article">
         <router-link to="/creation">
@@ -24,6 +24,7 @@
           </template>
           <b-dropdown-text>John Smith</b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
+          <!-- <b-dropdown-text v-if='privilege == admin'>Tableau de bord</b-dropdown-text> -->
           <b-dropdown-item>Déconnexion</b-dropdown-item>
           <b-dropdown-item>
             <router-link to="/compte">Détails du compte</router-link>
@@ -44,7 +45,8 @@
 </template>
 
 <script>
-  import articlepreview from "../components/articlePreview"
+  import articlepreview from "../components/articlePreview";
+  import axios from 'axios';
 
   export default {
     components: {
@@ -56,9 +58,20 @@
           { titre: 'titre article 1', auteur: 'John Smith', date: '05/12/99', id: 1 },
           { titre: 'titre article 2', auteur: 'John Carmack', date: '15/05/2020', id: 2 },
           { titre: 'titre article 3', auteur: 'John doe', date: '25/06/41', id: 3 }
-        ]
+        ],
+        userAuth: false,
       }
     },
+    created() {
+      axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
+      .then((response) => {
+        this.userAuth = true;
+        console.log(response)
+      })
+      .catch(() => { 
+        this.$router.push('Connexion');
+      })      
+    }
 	}
 </script>
 

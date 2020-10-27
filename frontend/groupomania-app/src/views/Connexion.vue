@@ -71,11 +71,11 @@
         this.pwdValue = false;
         valid = false;
       }
-      if (valid == true) {
+      if (valid == true) {        
         axios.post('http://localhost:3000/api/auth/login', {
           email: this.email,
           password: this.password
-        })
+        }, { withCredentials: true })
         .then((response) => {
           console.log(response);
           this.$router.push('accueil');

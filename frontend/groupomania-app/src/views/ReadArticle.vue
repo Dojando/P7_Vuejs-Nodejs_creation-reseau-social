@@ -42,7 +42,7 @@
           </p>
           <template v-slot:footer>
             <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
-            <b-button variant="outline-secondary">Copier le lien de l'article</b-button>
+            <b-button @click="copylink()" variant="outline-secondary">Copier le lien de l'article</b-button>
           </template>
         </b-card>
       </article>
@@ -131,8 +131,19 @@ import Editor from '@tinymce/tinymce-vue'
   },
   data() {
 		return {
-			formdata: "",
+      formdata: "",
 		}
+  },
+  methods: {
+  copylink() {
+    let tempInput = document.createElement("input");
+    tempInput.value = window.location.href;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand('copy');
+    document.body.removeChild(tempInput);
+     alert("Lien de l'article copié !");
+  }
 	}
 }
 </script>
