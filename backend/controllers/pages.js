@@ -49,6 +49,21 @@ exports.posterArticle = (req, res, next) => {
   }
 };
 
+exports.lireArticle = (req, res, next) => {
+  try {
+    db.query('SELECT articles.*, utilisateurs.prenom, utilisateurs.nom FROM articles, utilisateurs WHERE articles.id_utilisateur = utilisateurs.id AND articles.id = ?', [req.body.articleId], function(error, results) {
+      if (error) {
+        console.log(error);
+      }
+      return res.status(200).json(results);
+    })
+    } catch {
+    res.status(401).json({
+      error: new Error('erreur')
+    });
+  }
+};
+
 exports.listerArticles = (req, res, next) => {
   try {
     db.query('SELECT articles.id, articles.titre, articles.date_creation, articles.id_utilisateur, utilisateurs.prenom, utilisateurs.nom FROM articles, utilisateurs WHERE articles.id_utilisateur = utilisateurs.id ORDER BY articles.date_creation ASC', function(error, results) {

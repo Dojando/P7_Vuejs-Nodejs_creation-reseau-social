@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div v-if="userAuth == true" id="app">
     <header class="header">
       <div class="box box_retour">
         <router-link to="/accueil">
@@ -22,9 +22,12 @@
               <path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/>
             </svg>
           </template>
-          <b-dropdown-text>John Smith</b-dropdown-text>
+          <b-dropdown-text>
+            <router-link :to="{ name: 'UserActivity', params: { id: userData.userId }}">{{ userData.prenom+" "+userData.nom }}
+            </router-link></b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-item>Déconnexion</b-dropdown-item>
+          <b-dropdown-text v-if='userData.privilege == "admin"'>Tableau de bord</b-dropdown-text>
+          <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
           <b-dropdown-item>
             <router-link to="/compte">Détails du compte</router-link>
           </b-dropdown-item>
@@ -36,12 +39,12 @@
       <article>
         <b-card class="contenu_article mx-auto" border-variant="secondary">
           <template v-slot:header>
-            <h2>Titre de l'article</h2>
+            <h2>{{ article.titre }}</h2>
           </template>
-          <p class="text_article">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque inventore quam earum? Adipisci dolorem illo aliquid minus incidunt, molestias quas, tempore nisi deserunt neque ipsam quis quibusdam placeat animi doloribus.<br><br>Lorem ipsum dolor sit amet.<br>Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo, dignissimos!<br>Lorem ipsum dolor sit.
-          </p>
+          <div class="text_article" v-html="article.contenu">
+          </div>
           <template v-slot:footer>
-            <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
+            <b-card-text class="small info_article">Publié par {{ article.auteur }} le {{ article.date_creation }}</b-card-text>
             <b-button @click="copylink()" variant="outline-secondary">Copier le lien de l'article</b-button>
           </template>
         </b-card>
@@ -56,7 +59,7 @@
           <template v-slot:header>
             <p class="h5">Postez un commentaire</p>
           </template>
-            <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}" v-model="formdata"></editor>
+            <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
             <button type="submit" class="btn btn-primary btn_commentaire">Poster</button>
         </b-card>
         
@@ -122,7 +125,8 @@
 </template>
 
 <script>
-import Editor from '@tinymce/tinymce-vue'
+import Editor from '@tinymce/tinymce-vue';
+import axios from 'axios';
 
   export default {
 	name: 'App',
@@ -131,19 +135,78 @@ import Editor from '@tinymce/tinymce-vue'
   },
   data() {
 		return {
-      formdata: "",
+      article: {
+        id: null,
+        titre: null,
+        contenu: null,
+        date_creation: null,
+        id_utilisateur: null,
+        auteur: null,        
+      },
+      userData: {
+        userId: null,
+        prenom: null,
+        nom: null,
+        email: null,
+        privilege: null
+      },
+      userAuth: false,
 		}
   },
+  created() {
+    axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
+    .then((response) => {
+      this.userAuth = true;
+      this.userData = {
+        userId: response.data.userId,
+        prenom: response.data.prenom,
+        nom: response.data.nom,
+        email: response.data.email,
+        privilege: response.data.privilege
+      }
+      console.log(this.userData)
+    })
+    .catch(() => { 
+      this.$router.push('Connexion');
+    })
+
+    axios.post('http://localhost:3000/api/pages/lire-article', {articleId: this.$route.params.id}, { withCredentials: true })
+    .then((response) => { 
+      console.log(response.data[0]);
+      return this.article = {
+        id: response.data[0].id,
+        titre: response.data[0].titre,
+        contenu: response.data[0].contenu,
+        date_creation: response.data[0].date_creation.split('T')[0],
+        id_utilisateur: response.data[0].id_utilisateur,
+        auteur: response.data[0].prenom+' '+response.data[0].nom,        
+      }
+    })
+    .catch((error) => { 
+      console.log(error)
+    })
+
+  },
   methods: {
-  copylink() {
-    let tempInput = document.createElement("input");
-    tempInput.value = window.location.href;
-    document.body.appendChild(tempInput);
-    tempInput.select();
-    document.execCommand('copy');
-    document.body.removeChild(tempInput);
-     alert("Lien de l'article copié !");
-  }
+    copylink() {
+      let tempInput = document.createElement("input");
+      tempInput.value = window.location.href;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempInput);
+      alert("Lien de l'article copié !");
+    },
+    deconnexion() {
+      axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
+      .then((response) => {
+        console.log(response);
+        this.$router.push('connexion');
+      })
+      .catch((error) => {
+        console.log(error);
+      })
+    },
 	}
 }
 </script>
