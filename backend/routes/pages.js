@@ -6,6 +6,8 @@ const auth = require('../middleware/auth');
 const pagesCtrl = require('../controllers/pages');
 
 router.get('/auth-verif', pagesCtrl.verifConnexion);
-// router.post('/login', userCtrl.login);
+router.get('/deconnexion', pagesCtrl.deconnexion);
+router.post('/article', pagesCtrl.posterArticle);
+router.get('/articles', pagesCtrl.listerArticles);
 
 module.exports = router;

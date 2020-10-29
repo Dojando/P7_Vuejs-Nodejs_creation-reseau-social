@@ -131,10 +131,10 @@
           nom: this.nom,
           email: this.email,
           password: this.password
-        })
+        }, { withCredentials: true })
         .then((response) => {
           console.log(response);
-          this.validationMessage = response.data.message;
+          this.$router.push('accueil');
         })
         .catch((error) => {
           console.log(error);

@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div v-if="userAuth == true" id="app">
     <header class="header">
       <div class="box box_retour">
         <router-link to="/accueil">
@@ -22,9 +22,12 @@
               <path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/>
             </svg>
           </template>
-          <b-dropdown-text>John Smith</b-dropdown-text>
+          <b-dropdown-text>
+            <router-link :to="{ name: 'UserActivity', params: { id: userData.userId }}">{{ userData.prenom+" "+userData.nom }}
+            </router-link></b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-item>Déconnexion</b-dropdown-item>
+          <b-dropdown-text v-if='userData.privilege == "admin"'>Tableau de bord</b-dropdown-text>
+          <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
           <b-dropdown-item>
             <router-link to="/compte">Détails du compte</router-link>
           </b-dropdown-item>
@@ -36,10 +39,10 @@
     <div class="container">
       <b-card class="details_compte mx-auto" border-variant="secondary" header="Détails du compte" header-border-variant="secondary">
         <b-list-group flush>
-          <b-list-group-item><strong>Prenom : </strong>John</b-list-group-item>
-          <b-list-group-item><strong>Nom : </strong>Smith</b-list-group-item>
-          <b-list-group-item><strong>Email : </strong>Johnsmith@gmail.com</b-list-group-item>
-          <b-list-group-item><b-button>Deconnexion</b-button></b-list-group-item>
+          <b-list-group-item><strong>Prenom : </strong>{{ userData.prenom }}</b-list-group-item>
+          <b-list-group-item><strong>Nom : </strong>{{ userData.nom }}</b-list-group-item>
+          <b-list-group-item><strong>Email : </strong>{{ userData.email }}</b-list-group-item>
+          <b-list-group-item><b-button @click="deconnexion()">Deconnexion</b-button></b-list-group-item>
           <b-list-group-item><b-button variant="danger">Supprimer le compte</b-button></b-list-group-item>
         </b-list-group>
       </b-card>
@@ -52,12 +55,50 @@
 </template>
 
 <script>
+  import axios from 'axios';
+
   export default {
   data() {
 		return {
-			component:"LoginForm"
+      userData: {
+        userId: null,
+        prenom: null,
+        nom: null,
+        email: null,
+        privilege: null
+      },
+      userAuth: false,
 		}
-	}
+  },
+  created() {
+  axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
+  .then((response) => {
+    this.userAuth = true;
+    this.userData = {
+      userId: response.data.userId,
+      prenom: response.data.prenom,
+      nom: response.data.nom,
+      email: response.data.email,
+      privilege: response.data.privilege
+    }
+    console.log(this.userData)
+  })
+  .catch(() => { 
+    this.$router.push('Connexion');
+  })      
+  },
+  methods: {
+  deconnexion() {
+    axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
+    .then((response) => {
+      console.log(response);
+      this.$router.push('connexion');
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+  }
+  }
 }
 </script>
 

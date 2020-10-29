@@ -22,10 +22,12 @@
               <path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/>
             </svg>
           </template>
-          <b-dropdown-text>John Smith</b-dropdown-text>
+          <b-dropdown-text>
+            <router-link :to="{ name: 'UserActivity', params: { id: userData.userId }}">{{ userData.prenom+" "+userData.nom }}
+            </router-link></b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
-          <!-- <b-dropdown-text v-if='privilege == admin'>Tableau de bord</b-dropdown-text> -->
-          <b-dropdown-item>Déconnexion</b-dropdown-item>
+          <b-dropdown-text v-if='userData.privilege == "admin"'>Tableau de bord</b-dropdown-text>
+          <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
           <b-dropdown-item>
             <router-link to="/compte">Détails du compte</router-link>
           </b-dropdown-item>
@@ -35,7 +37,7 @@
 
     <!-- liste d'articles -->
     <div class="container mb-2" v-for="item in apiResponse" :key="item.id">
-      <articlepreview :titre="item.titre" :auteur="item.auteur" :date="item.date"></articlepreview>
+      <articlepreview :articleId="item.id" :titre="item.titre" :auteur="item.prenom+' '+item.nom" :date="item.date_creation.split('T')[0]"></articlepreview>
     </div>
     
     <footer class="footer">
@@ -54,25 +56,63 @@
     },
     data() {
       return {
-        apiResponse: [
-          { titre: 'titre article 1', auteur: 'John Smith', date: '05/12/99', id: 1 },
-          { titre: 'titre article 2', auteur: 'John Carmack', date: '15/05/2020', id: 2 },
-          { titre: 'titre article 3', auteur: 'John doe', date: '25/06/41', id: 3 }
-        ],
+        userData: {
+          userId: null,
+          prenom: null,
+          nom: null,
+          email: null,
+          privilege: null
+        },
         userAuth: false,
+        apiResponse: [
+          // { titre: 'titre article 1', auteur: 'John Smith', date: '05/12/99', id: 1 },
+          // { titre: 'titre article 2', auteur: 'John Carmack', date: '15/05/2020', id: 2 },
+          // { titre: 'titre article 3', auteur: 'John doe', date: '25/06/41', id: 3 }
+        ],
+
       }
     },
     created() {
+      // vérification de l'authentification
       axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
       .then((response) => {
         this.userAuth = true;
-        console.log(response)
+        this.userData = {
+          userId: response.data.userId,
+          prenom: response.data.prenom,
+          nom: response.data.nom,
+          email: response.data.email,
+          privilege: response.data.privilege
+        }
+        console.log(this.userData)
       })
       .catch(() => { 
         this.$router.push('Connexion');
-      })      
+      })
+      
+      // Récuperation et affichage des articles
+      axios.get('http://localhost:3000/api/pages/articles', { withCredentials: true })
+      .then((response) => {
+        console.log(response)
+        this.apiResponse = response.data;
+      })
+      .catch((error) => { 
+        console.log(error)
+      })  
+    },
+    methods: {
+      deconnexion() {
+        axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
+        .then((response) => {
+          console.log(response);
+          this.$router.push('connexion');
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+      }
     }
-	}
+  }
 </script>
 
 <style scoped>

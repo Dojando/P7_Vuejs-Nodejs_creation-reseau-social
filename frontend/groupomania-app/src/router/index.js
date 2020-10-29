@@ -37,12 +37,12 @@ const routes = [
     component: CreationArticle
   },
   {
-    path: '/article',
+    path: '/article/:id',
     name: 'LireArticle',
     component: LireArticle
   },
   {
-    path: '/utilisateur',
+    path: '/utilisateur/:id',
     name: 'UserActivity',
     component: UserActivity
   },

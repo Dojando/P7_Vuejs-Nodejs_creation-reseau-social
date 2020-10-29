@@ -19,9 +19,33 @@ exports.signup = (req, res, next) => {
     } else {
       bcrypt.hash(req.body.password, 10)
         .then(hash => {
-        db.query('INSERT INTO utilisateurs SET ?', {prenom: req.body.prenom, nom: req.body.nom, email: req.body.email, mot_de_passe: hash})
+          db.query('INSERT INTO utilisateurs SET ?', {prenom: req.body.prenom, nom: req.body.nom, email: req.body.email, mot_de_passe: hash})
+          })
+        .then(() => {
+          console.log("test 1");
+          db.query('SELECT * FROM utilisateurs WHERE email = ?', [req.body.email], function(error, results) {
+            if (error) {
+              console.log(error);
+            }
+            console.log(results);
+            console.log("test 4");
+            const token = jwt.sign(
+              { 
+                userId: results[0].id,
+                prenom: results[0].prenom,
+                nom: results[0].nom,
+                email: results[0].email,
+                privilege: results[0].privilege
+              },
+              'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk',
+            )
+            console.log(token);
+            res.cookie('authcookie',token,{
+              expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+              httpOnly:true});
+            res.status(200).json({message : 'Utilisateur connecté'})
+          })
         })
-        .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
         .catch(error => res.status(500).json({ error }))   
     }
   })
