@@ -66,13 +66,162 @@ exports.lireArticle = (req, res, next) => {
 
 exports.listerArticles = (req, res, next) => {
   try {
-    db.query('SELECT articles.id, articles.titre, articles.date_creation, articles.id_utilisateur, utilisateurs.prenom, utilisateurs.nom FROM articles, utilisateurs WHERE articles.id_utilisateur = utilisateurs.id ORDER BY articles.date_creation ASC', function(error, results) {
+    db.query('SELECT articles.id, articles.titre, articles.date_creation, articles.id_utilisateur, utilisateurs.prenom, utilisateurs.nom FROM articles, utilisateurs WHERE articles.id_utilisateur = utilisateurs.id ORDER BY articles.date_creation DESC', function(error, results) {
       if (error) {
         console.log(error);
       }
       console.log(results);
       return res.status(200).json(results);
     })
+  } catch {
+    res.status(401).json({
+      error: new Error('erreur')
+    });
+  }
+};
+
+exports.listerArticlesUtilisateur = (req, res, next) => {
+  try {
+    db.query('SELECT articles.id, articles.titre, articles.date_creation, articles.id_utilisateur, utilisateurs.prenom, utilisateurs.nom FROM articles, utilisateurs WHERE articles.id_utilisateur = utilisateurs.id AND utilisateurs.id = ? ORDER BY articles.date_creation DESC', [req.body.userId], function(error, results) {
+      if (error) {
+        console.log(error);
+      }
+      console.log(results);
+      return res.status(200).json(results);
+    })
+  } catch {
+    res.status(401).json({
+      error: new Error('erreur')
+    });
+  }
+};
+
+exports.posterCommentaire = (req, res, next) => {
+  try {
+    if (req.cookies.authcookie == null) {
+      console.log("Utilisateur non authentifié");
+      return res.status(401).json({ error });
+    } else {
+      console.log(req.body)
+      const token = req.cookies.authcookie;
+      const decodedToken = jwt.verify(token, 'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk');
+      db.query('INSERT INTO commentaires SET ?', {contenu: req.body.contenu, id_utilisateur: decodedToken.userId, id_article: req.body.articleId, id_parent: req.body.parentId})
+      return res.status(200).json({ message: "Commentaire publié" });
+    }
+  } catch {
+    res.status(401).json({
+      error: new Error('erreur')
+    });
+  }
+};
+
+exports.recupererCommentaire = (req, res, next) => {
+  try {
+    db.query('SELECT commentaires.*, utilisateurs.prenom, utilisateurs.nom FROM commentaires, utilisateurs WHERE commentaires.id_utilisateur = utilisateurs.id AND commentaires.id_article = ? ORDER BY commentaires.date_creation ASC', [req.body.articleId], function(error, results) {
+      if (error) {
+        console.log(error);
+      }
+      return res.status(200).json(results);
+    })
+  } catch {
+    res.status(401).json({
+      error: new Error('erreur')
+    });
+  }
+};
+
+exports.recupererCommentaireUtilisateur = (req, res, next) => {
+  try {
+    db.query('SELECT commentaires.*, utilisateurs.prenom, utilisateurs.nom FROM commentaires, utilisateurs WHERE commentaires.id_utilisateur = utilisateurs.id AND commentaires.id_utilisateur = ? ORDER BY commentaires.date_creation ASC', [req.body.userId], function(error, results) {
+      if (error) {
+        console.log(error);
+      }
+      return res.status(200).json(results);
+    })
+  } catch {
+    res.status(401).json({
+      error: new Error('erreur')
+    });
+  }
+};
+
+exports.infosUtilisateur = (req, res, next) => {
+  try {
+    db.query('SELECT prenom, nom FROM utilisateurs WHERE id = ?', [req.body.userId], function(error, results) {
+      if (error) {
+        console.log(error);
+      }
+      return res.status(200).json(results);
+    })
+  } catch {
+    res.status(401).json({
+      error: new Error('erreur')
+    });
+  }
+};
+
+exports.supprimerCommentaire = (req, res, next) => {
+  try {
+    if (req.cookies.authcookie == null) {
+      console.log(req.cookies.authcookie);
+      console.log("Utilisateur non authentifié");
+      return res.status(401).json({ error });
+    } else {
+      const token = req.cookies.authcookie;
+      const decodedToken = jwt.verify(token, 'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk');
+      if(decodedToken.userId == req.body.auteurId || decodedToken.privilege == 'admin') {
+        if (req.body.parentId == null) {
+          db.query('DELETE FROM commentaires WHERE id = ? OR id_parent = ?', [req.body.commentaireId, req.body.commentaireId], function(error, results) {
+            if (error) {
+              console.log(error);
+            }
+            return res.status(200).json({ message: "Commentaire supprimé" });
+          })
+        } else if (req.body.parentId != null) {
+          db.query('DELETE FROM commentaires WHERE id = ?', [req.body.commentaireId], function(error, results) {
+            if (error) {
+              console.log(error);
+            }
+            return res.status(200).json({ message: "Commentaire supprimé" });
+          })
+        }
+      } else {
+        return res.status(401).json({ error });
+      }      
+    }
+  } catch {
+    res.status(401).json({
+      error: new Error('erreur')
+    });
+  }
+};
+
+exports.supprimerArticle = (req, res, next) => {
+  try {
+    if (req.cookies.authcookie == null) {
+      console.log(req.cookies.authcookie);
+      console.log("Utilisateur non authentifié");
+      return res.status(401).json({ error });
+    } else {
+      console.log(req.body);
+      const token = req.cookies.authcookie;
+      const decodedToken = jwt.verify(token, 'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk');
+      if(decodedToken.userId == req.body.auteurId || decodedToken.privilege == 'admin') {
+        db.query('DELETE FROM articles WHERE id = ?', [req.body.articleId], function(error, results) {
+          if (error) {
+            console.log(error);
+          }
+          db.query('DELETE FROM commentaires WHERE id_article = ?', [req.body.articleId], function(error, results) {
+            if (error) {
+              console.log(error);
+            }
+            return res.status(200).json({ message: "Article supprimé" });
+          })
+        })
+      } else {
+        return res.status(401).json({ error });
+      }      
+    }
   } catch {
     res.status(401).json({
       error: new Error('erreur')

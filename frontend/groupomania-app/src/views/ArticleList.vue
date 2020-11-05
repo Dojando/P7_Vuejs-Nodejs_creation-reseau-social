@@ -87,7 +87,7 @@
         console.log(this.userData)
       })
       .catch(() => { 
-        this.$router.push('Connexion');
+        this.$router.push({ name: 'Connexion' });
       })
       
       // Récuperation et affichage des articles
@@ -105,7 +105,7 @@
         axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
         .then((response) => {
           console.log(response);
-          this.$router.push('connexion');
+          this.$router.push({ name: 'Connexion' });
         })
         .catch((error) => {
           console.log(error);

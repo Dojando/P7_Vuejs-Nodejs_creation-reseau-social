@@ -102,7 +102,7 @@ import axios from 'axios';
       console.log(this.userData)
     })
     .catch(() => { 
-      this.$router.push('Connexion');
+      this.$router.push({ name: 'Connexion' });
     })      
   },
   methods: {
@@ -110,7 +110,7 @@ import axios from 'axios';
       axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
       .then((response) => {
         console.log(response);
-        this.$router.push('connexion');
+        this.$router.push({ name: 'Connexion' });
       })
       .catch((error) => {
         console.log(error);
@@ -133,7 +133,7 @@ import axios from 'axios';
         axios.post('http://localhost:3000/api/pages/article', {titre: this.articleData.titre, contenu: this.articleData.contenu}, { withCredentials: true })
         .then((response) => {
           console.log(response)
-          this.$router.push('accueil');
+          this.$router.push({ name: 'Accueil'});
         })
         .catch((error) => { 
           console.log(error);

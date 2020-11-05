@@ -40,81 +40,92 @@
         <b-card class="contenu_article mx-auto" border-variant="secondary">
           <template v-slot:header>
             <h2>{{ article.titre }}</h2>
+            <b-button @click="suppressionarticle()" class="button_delete" variant="danger" size="sm">Supprimer</b-button>
+            <!-- <b-button size="sm" class="mb-2">
+              <b-icon icon="gear-fill" aria-hidden="true"></b-icon> Settings
+            </b-button> -->
           </template>
           <div class="text_article" v-html="article.contenu">
           </div>
           <template v-slot:footer>
-            <b-card-text class="small info_article">Publié par {{ article.auteur }} le {{ article.date_creation }}</b-card-text>
+            <b-card-text class="small info_article">
+              Publié par <router-link v-if="article.id_utilisateur != null" :to="{ name: 'UserActivity', params: { id: article.id_utilisateur }}">{{ article.auteur }}</router-link><span v-if="article.id_utilisateur == null">{{ article.auteur }}</span> le {{ article.date_creation }}
+            </b-card-text>
             <b-button @click="copylink()" variant="outline-secondary">Copier le lien de l'article</b-button>
           </template>
         </b-card>
       </article>
-
+      
+      <!-- espace commentaires -->
       <b-card class="espace_commentaire mx-auto" border-variant="secondary">
         <template v-slot:header>
           <h3>Commentaires</h3>
         </template>
 
-        <b-card class="mx-auto text_zone" border-variant="secondary">
-          <template v-slot:header>
-            <p class="h5">Postez un commentaire</p>
-          </template>
-            <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
-            <button type="submit" class="btn btn-primary btn_commentaire">Poster</button>
-        </b-card>
-        
-        <b-card class="mx-auto" border-variant="secondary">
-          <template v-slot:header>
-            <div class="comment_header">
-              <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
-              <div class="comment_button">
-                <b-button v-b-toggle.collapse-1 size="sm">Répondre</b-button>
-                <b-button class="button_delete" variant="danger" size="sm">Supprimer</b-button>
-              </div>
-            </div>
-          </template>
-          <p class="small">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque voluptatum eaque ab asperiores eveniet, deserunt molestiae placeat maiores sequi earum autem iste quia esse ad necessitatibus adipisci hic, deleniti soluta pariatur! Explicabo, ea fugiat! Deleniti consectetur esse quis maiores repellendus totam, perspiciatis nemo repudiandae sint porro quaerat ullam nam nostrum.
-          </p>
-        </b-card>
-        <b-collapse id="collapse-1" class="mt-2">
-          <b-card>
-            <form class="form_article mx-auto">
-              <div class="form-group">
-                <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
-                <div class="invalid-feedback">
-                  Ecrivez quelque chose dans l'article
+        <div class="mx-auto border border-secondary">
+          <b-card-header>
+            <p class="h5">Postez un commentaire</p>  
+          </b-card-header>
+          <editor v-model="commentaireContenu" class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
+        </div>
+        <div class="poster_commentaire">
+          <button @click="commentaire()" class="btn btn-primary btn_commentaire">Poster</button>
+          <div v-show="errorMessageCommentaire != null" class="small text-danger mt-2">
+            {{ errorMessageCommentaire }}
+          </div>
+          <b-card-text v-show="valideMessageCommentaire == true" class="small text-success mt-2">
+            Message posté
+          </b-card-text>          
+        </div>
+
+        <!-- commentaire -->
+        <div v-if="commentaires != null">
+          <div v-for="parent in commentairesParents()" :key="parent.id">
+            <b-card class="mx-auto mt-3" border-variant="secondary">
+              <template v-slot:header>
+                <div class="comment_header">
+                  <b-card-text class="small info_article">Publié par <router-link v-if="parent.prenom != null" :to="{ name: 'UserActivity', params: { id: parent.id_utilisateur }}">{{ auteur(parent.prenom, parent.nom) }}</router-link>
+                  <span v-if="parent.prenom == null">[Utilisateur indisponible]</span> le {{ parent.date_creation.split('T')[0] }}</b-card-text>
+                  <div class="comment_button">
+                    <b-button v-b-toggle="JSON.stringify(parent.id)" size="sm">Répondre</b-button>
+                    <b-button @click="suppressioncoms(parent.id, parent.id_utilisateur, parent.id_parent)" v-if="parent.id_utilisateur == userData.userId || userData.privilege == 'admin'" class="button_delete" variant="danger" size="sm">Supprimer</b-button>
+                  </div>
                 </div>
-              </div>
-              <button type="submit" class="btn btn-primary">Poster</button>
-            </form>
-          </b-card>
-        </b-collapse>
-        <b-card style="width: 90%;margin-top:10px" class="ml-auto" border-variant="secondary">
-          <template v-slot:header>
-            <div class="comment_header">
-              <b-card-text class="small info_article">Publié par John Smith le 00/00/00</b-card-text>
-              <div class="comment_button">
-                <b-button v-b-toggle.collapse-1-rep size="sm">Répondre</b-button>
-                <b-button class="button_delete" variant="danger" size="sm">Supprimer</b-button>
-              </div>
-            </div>
-          </template>
-          <p class="small">Lorem ipsum dolor sit amet consectetur adipisicing elit. Doloremque Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque voluptatum eaque ab asperiores eveniet, deserunt molestiae placeat maiores sequi earum autem iste quia esse ad necessitatibus adipisci hic, deleniti soluta pariatur! Explicabo, ea fugiat! Deleniti consectetur esse quis maiores repellendus totam, perspiciatis nemo repudiandae sint porro quaerat ullam nam nostrum.
-          </p>
-        </b-card>
-        <b-collapse id="collapse-1-rep" class="mt-2">
-          <b-card>
-            <form class="form_article mx-auto">
-              <div class="form-group">
-                <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
-                <div class="invalid-feedback">
-                  Ecrivez quelque chose dans l'article
+              </template>
+              <div class="small" v-html="parent.contenu"></div>
+            </b-card>
+            <b-collapse :id="JSON.stringify(parent.id)" class="mt-2">
+              <b-card class="mx-auto">
+                <div class="form-group">
+                  <editor v-model="reponseContenu" class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
                 </div>
-              </div>
-              <button type="submit" class="btn btn-primary">Poster</button>
-            </form>
-          </b-card>
-        </b-collapse>
+                <button @click="reponse(parent.id)" class="btn btn-primary">Poster</button>
+                <div v-show="errorMessageReponse != null" class="small text-danger mt-2">
+                  {{ errorMessageReponse }}
+                </div>
+                <b-card-text v-show="valideMessageReponse == true" class="small text-success mt-2">
+                  Message posté
+                </b-card-text>
+              </b-card>
+            </b-collapse>
+
+            <!-- reponses -->
+            <div class="mb-3" v-for="child in commentairesEnfants(parent.id)" :key="child.id">
+              <b-card style="width: 90%" class="ml-auto mt-3" border-variant="secondary">
+                <template v-slot:header>
+                  <div class="comment_header">
+                    <b-card-text class="small info_article">Publié par <router-link v-if="child.prenom != null" :to="{ name: 'UserActivity', params: { id: child.id_utilisateur }}">{{ auteur(child.prenom, child.nom) }}</router-link>
+                  <span v-if="child.prenom == null">[Utilisateur indisponible]</span> le {{child.date_creation.split('T')[0]}}</b-card-text>
+                    <div class="comment_button">
+                      <b-button @click="suppressioncoms(child.id, child.id_utilisateur, child.id_parent)" v-if="child.id_utilisateur == userData.userId || userData.privilege == 'admin'" class="button_delete" variant="danger" size="sm">Supprimer</b-button>
+                    </div>
+                  </div>
+                </template>
+                <div class="small" v-html="child.contenu"></div>
+              </b-card> 
+            </div>
+          </div>
+        </div>
       </b-card>
     </main>
 
@@ -143,6 +154,7 @@ import axios from 'axios';
         id_utilisateur: null,
         auteur: null,        
       },
+      commentaires: null,     
       userData: {
         userId: null,
         prenom: null,
@@ -151,28 +163,20 @@ import axios from 'axios';
         privilege: null
       },
       userAuth: false,
+      commentaireContenu: "",
+      reponseContenu: "",
+      errorMessageCommentaire: null,
+      errorMessageReponse: null,
+      valideMessageReponse: false,
+      valideMessageCommentaire: false,
 		}
   },
   created() {
-    axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
-    .then((response) => {
-      this.userAuth = true;
-      this.userData = {
-        userId: response.data.userId,
-        prenom: response.data.prenom,
-        nom: response.data.nom,
-        email: response.data.email,
-        privilege: response.data.privilege
-      }
-      console.log(this.userData)
-    })
-    .catch(() => { 
-      this.$router.push('Connexion');
-    })
+    this.authverif()
 
+    // recuperation des informations de l'article
     axios.post('http://localhost:3000/api/pages/lire-article', {articleId: this.$route.params.id}, { withCredentials: true })
     .then((response) => { 
-      console.log(response.data[0]);
       return this.article = {
         id: response.data[0].id,
         titre: response.data[0].titre,
@@ -186,6 +190,7 @@ import axios from 'axios';
       console.log(error)
     })
 
+    this.recupcoms()
   },
   methods: {
     copylink() {
@@ -197,16 +202,129 @@ import axios from 'axios';
       document.body.removeChild(tempInput);
       alert("Lien de l'article copié !");
     },
+    authverif() {
+      // verification de la connexion
+      axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
+      .then((response) => {
+        this.userAuth = true;
+        return this.userData = {
+          userId: response.data.userId,
+          prenom: response.data.prenom,
+          nom: response.data.nom,
+          email: response.data.email,
+          privilege: response.data.privilege
+        }
+      })
+      .catch(() => { 
+        this.$router.push({ name: 'Connexion' });
+      })      
+    },
     deconnexion() {
       axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
       .then((response) => {
         console.log(response);
-        this.$router.push('connexion');
+        this.$router.push({ name: 'Connexion' });
       })
       .catch((error) => {
         console.log(error);
       })
     },
+    recupcoms() {
+      // recuperation des commentaires de l'article
+      axios.post('http://localhost:3000/api/pages/recuperer-commentaire', {articleId: this.$route.params.id}, { withCredentials: true })
+      .then((response) => { 
+        console.log(response.data);
+        return this.commentaires = response.data;
+      })
+      .catch((error) => { 
+        console.log(error)
+      })      
+    },
+    commentaire() {
+      let valid = true;
+      this.errorMessageCommentaire = null;
+      this.errorMessageCommentaireChild = null;
+      this.valideMessageCommentaire = false;
+      if (this.commentaireContenu.length == 0) {
+        valid = false;
+        this.errorMessageCommentaire = "Veuillez remplir le champ"
+      }      
+      if (valid == true) {
+        axios.post('http://localhost:3000/api/pages/commentaire', {articleId: this.$route.params.id, contenu: this.commentaireContenu}, { withCredentials: true })
+        .then((response) => {
+          console.log(response);
+          this.commentaireContenu = "";
+          this.valideMessageCommentaire = true;
+          this.recupcoms();
+        })
+        .catch((error) => { 
+          console.log(error);
+        }) 
+      }
+    },
+    reponse(parent) {
+      let valid = true;
+      this.errorMessageReponse = null;
+      this.valideMessageReponse = false;
+      if (this.reponseContenu.length == 0) {
+        valid = false;
+        this.errorMessageReponse = "Veuillez remplir le champ"
+      }      
+      if (valid == true) {
+        axios.post('http://localhost:3000/api/pages/commentaire', {articleId: this.$route.params.id, contenu: this.reponseContenu, parentId: parent}, { withCredentials: true })
+        .then((response) => {
+          console.log(response);
+          this.reponseContenu = "";
+          this.valideMessageReponse = true;
+          this.recupcoms();
+        })
+        .catch((error) => { 
+          console.log(error);
+        }) 
+      }
+    },
+    suppressioncoms(comId, auteurId, parentId) {
+      axios.post('http://localhost:3000/api/pages/supprimer-commentaire', {commentaireId: comId, auteurId: auteurId, parentId: parentId}, { withCredentials: true })
+      .then((response) => {
+        console.log(response);
+        this.recupcoms();
+      })
+      .catch((error) => { 
+        console.log(error);
+      }) 
+    },
+    suppressionarticle() {
+      axios.post('http://localhost:3000/api/pages/supprimer-article', {articleId: this.article.id, auteurId: this.article.id_utilisateur}, { withCredentials: true })
+      .then((response) => {
+        console.log(response);
+        this.$router.push({ name: 'Accueil' });
+      })
+      .catch((error) => { 
+        console.log(error);
+      }) 
+    },
+    commentairesParents() {
+      let comsParent = [];
+      for (let i = 0; i < this.commentaires.length; i++) {
+        if (this.commentaires[i].id_parent == null) {
+          comsParent.push(this.commentaires[i]);
+        }
+      }
+      return comsParent;
+    },
+    commentairesEnfants(parentId) {
+      let comsChild = [];
+      for (let i = 0; i < this.commentaires.length; i++) {
+        if (this.commentaires[i].id_parent == parentId) {
+          comsChild.push(this.commentaires[i]);
+        }
+      }
+      return comsChild;
+    },
+
+    auteur(prenom, nom) {
+      return prenom+' '+nom;
+    }
 	}
 }
 </script>
@@ -300,7 +418,11 @@ article h2 {
 }
 
 .text_zone {
-  margin-bottom: 30px;
+  padding-top: 0px;
+}
+
+.poster_commentaire {
+  margin-bottom: 50px
 }
 
 .comment_header {

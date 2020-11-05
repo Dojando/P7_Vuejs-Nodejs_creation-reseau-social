@@ -57,6 +57,12 @@
       errorMessage: null,
     }
   },
+  created() {
+    axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
+    .then(() => {
+      this.$router.push({ name: 'Accueil' });
+    })
+  },
   methods: {
     connexion() {
       let valid = true;
@@ -78,7 +84,7 @@
         }, { withCredentials: true })
         .then((response) => {
           console.log(response);
-          this.$router.push('accueil');
+          this.$router.push({ name: 'Accueil' });
         })
         .catch((error) => {
           console.log(error);
