@@ -26,7 +26,7 @@
             <router-link :to="{ name: 'UserActivity', params: { id: userData.userId }}">{{ userData.prenom+" "+userData.nom }}
             </router-link></b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-text v-if='userData.privilege == "admin"'>Tableau de bord</b-dropdown-text>
+          <b-dropdown-text v-if='userData.privilege == "admin"'><router-link to="/signalement">Signalement</router-link></b-dropdown-text>
           <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
           <b-dropdown-item>
             <router-link to="/compte">Détails du compte</router-link>
@@ -39,17 +39,23 @@
       <article>
         <b-card class="contenu_article mx-auto" border-variant="secondary">
           <template v-slot:header>
-            <h2>{{ article.titre }}</h2>
-            <b-button @click="suppressionarticle()" class="button_delete" variant="danger" size="sm">Supprimer</b-button>
-            <!-- <b-button size="sm" class="mb-2">
-              <b-icon icon="gear-fill" aria-hidden="true"></b-icon> Settings
-            </b-button> -->
+            <div class="titre_menu">
+              <h2>{{ article.titre }}</h2>
+              <b-dropdown v-if="article.id_utilisateur == userData.userId || userData.privilege == 'admin'" variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
+                <template v-slot:button-content>
+                  <svg width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
+                </template>
+                <b-dropdown-item variant="danger" @click="suppressionarticle()">Supprimer</b-dropdown-item>
+              </b-dropdown>
+            </div>
           </template>
           <div class="text_article" v-html="article.contenu">
           </div>
           <template v-slot:footer>
             <b-card-text class="small info_article">
-              Publié par <router-link v-if="article.id_utilisateur != null" :to="{ name: 'UserActivity', params: { id: article.id_utilisateur }}">{{ article.auteur }}</router-link><span v-if="article.id_utilisateur == null">{{ article.auteur }}</span> le {{ article.date_creation }}
+              Publié par 
+              <router-link v-if="article.prenom != null && article.nom != null" :to="{ name: 'UserActivity', params: { id: article.id_utilisateur }}">{{ article.prenom+' '+article.nom }}</router-link>
+              <span class="font-weight-bold" v-if="article.prenom == null && article.nom == null">[Utilisateur indisponible]</span> le {{ article.date_creation }}
             </b-card-text>
             <b-button @click="copylink()" variant="outline-secondary">Copier le lien de l'article</b-button>
           </template>
@@ -84,12 +90,17 @@
             <b-card class="mx-auto mt-3" border-variant="secondary">
               <template v-slot:header>
                 <div class="comment_header">
-                  <b-card-text class="small info_article">Publié par <router-link v-if="parent.prenom != null" :to="{ name: 'UserActivity', params: { id: parent.id_utilisateur }}">{{ auteur(parent.prenom, parent.nom) }}</router-link>
-                  <span v-if="parent.prenom == null">[Utilisateur indisponible]</span> le {{ parent.date_creation.split('T')[0] }}</b-card-text>
-                  <div class="comment_button">
-                    <b-button v-b-toggle="JSON.stringify(parent.id)" size="sm">Répondre</b-button>
-                    <b-button @click="suppressioncoms(parent.id, parent.id_utilisateur, parent.id_parent)" v-if="parent.id_utilisateur == userData.userId || userData.privilege == 'admin'" class="button_delete" variant="danger" size="sm">Supprimer</b-button>
-                  </div>
+                  <b-card-text class="small info_article">Publié par <router-link v-if="parent.prenom != null && parent.nom != null" :to="{ name: 'UserActivity', params: { id: parent.id_utilisateur }}">{{ auteur(parent.prenom, parent.nom) }}</router-link>
+                  <span class="font-weight-bold" v-if="parent.prenom == null && parent.nom == null">[Utilisateur indisponible]</span> le {{ parent.date_creation.split('T')[0] }}</b-card-text>
+                  <b-dropdown variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
+                    <template v-slot:button-content>
+                      <svg width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
+                    </template>
+                    <b-dropdown-item v-b-toggle="JSON.stringify(parent.id)">Répondre</b-dropdown-item>
+                    <b-dropdown-divider></b-dropdown-divider>
+                    <b-dropdown-item variant="danger" @click="suppressioncoms(parent.id, parent.id_utilisateur, parent.id_parent)" v-if="parent.id_utilisateur == userData.userId || userData.privilege == 'admin'">Supprimer</b-dropdown-item>
+                    <b-dropdown-item v-if="userData.privilege != 'admin' && parent.id_utilisateur != userData.userId" variant="danger" @click="signalementcoms(parent.id)">Signaler</b-dropdown-item>
+                  </b-dropdown>
                 </div>
               </template>
               <div class="small" v-html="parent.contenu"></div>
@@ -114,11 +125,15 @@
               <b-card style="width: 90%" class="ml-auto mt-3" border-variant="secondary">
                 <template v-slot:header>
                   <div class="comment_header">
-                    <b-card-text class="small info_article">Publié par <router-link v-if="child.prenom != null" :to="{ name: 'UserActivity', params: { id: child.id_utilisateur }}">{{ auteur(child.prenom, child.nom) }}</router-link>
-                  <span v-if="child.prenom == null">[Utilisateur indisponible]</span> le {{child.date_creation.split('T')[0]}}</b-card-text>
-                    <div class="comment_button">
-                      <b-button @click="suppressioncoms(child.id, child.id_utilisateur, child.id_parent)" v-if="child.id_utilisateur == userData.userId || userData.privilege == 'admin'" class="button_delete" variant="danger" size="sm">Supprimer</b-button>
-                    </div>
+                    <b-card-text class="small info_article">Publié par <router-link v-if="child.prenom != null && child.nom != null" :to="{ name: 'UserActivity', params: { id: child.id_utilisateur }}">{{ auteur(child.prenom, child.nom) }}</router-link>
+                  <span class="font-weight-bold" v-if="child.prenom == null && child.nom == null">[Utilisateur indisponible]</span> le {{child.date_creation.split('T')[0]}}</b-card-text>
+                  <b-dropdown variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
+                    <template v-slot:button-content>
+                      <svg width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
+                    </template>
+                    <b-dropdown-item variant="danger" @click="suppressioncoms(child.id, child.id_utilisateur, child.id_parent)" v-if="child.id_utilisateur == userData.userId || userData.privilege == 'admin'">Supprimer</b-dropdown-item>
+                    <b-dropdown-item variant="danger" v-if="child.id_utilisateur != userData.userId && userData.privilege != 'admin'" @click="signalementcoms(child.id)">Signaler</b-dropdown-item>
+                  </b-dropdown>
                   </div>
                 </template>
                 <div class="small" v-html="child.contenu"></div>
@@ -183,7 +198,8 @@ import axios from 'axios';
         contenu: response.data[0].contenu,
         date_creation: response.data[0].date_creation.split('T')[0],
         id_utilisateur: response.data[0].id_utilisateur,
-        auteur: response.data[0].prenom+' '+response.data[0].nom,        
+        prenom: response.data[0].prenom,
+        nom: response.data[0].nom,         
       }
     })
     .catch((error) => { 
@@ -303,6 +319,16 @@ import axios from 'axios';
         console.log(error);
       }) 
     },
+    signalementcoms(comId) {
+      axios.post('http://localhost:3000/api/pages/signaler-commentaire', {comId: comId}, { withCredentials: true })
+      .then((response) => {
+        console.log(response);
+        return window.alert("Commentaire signalé");
+      })
+      .catch((error) => { 
+        console.log(error);
+      }) 
+    },
     commentairesParents() {
       let comsParent = [];
       for (let i = 0; i < this.commentaires.length; i++) {
@@ -321,7 +347,6 @@ import axios from 'axios';
       }
       return comsChild;
     },
-
     auteur(prenom, nom) {
       return prenom+' '+nom;
     }
@@ -390,8 +415,14 @@ import axios from 'axios';
 }
 
 /* Body */
-article h2 {
-  margin-bottom: 20px;
+.titre_menu {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn_compte {
+  display: block;
 }
 
 .contenu_article {
@@ -429,10 +460,6 @@ article h2 {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.button_delete {
-  margin-left: 10px;
 }
 
 .btn_commentaire {

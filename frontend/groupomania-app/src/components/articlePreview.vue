@@ -1,7 +1,10 @@
 <template>
   <router-link :to="{ name: 'LireArticle', params: { id: articleId }}">
     <b-card class="article_card" bg-variant="secondary" text-variant="white" :title="titre" border-variant="secondary">
-      <b-card-text class="small info_article">Publié par {{ auteur }} le {{ date }}</b-card-text>
+      <b-card-text class="small info_article">Publié par 
+        <span v-if="prenom != null && nom != null">{{ prenom+' '+nom }}</span>
+        <span v-if="prenom == null && nom == null">[Utilisateur indisponible]</span>
+        le {{ date }}</b-card-text>
     </b-card>
   </router-link>
 </template>
@@ -13,9 +16,11 @@ export default {
     titre: {
       type: String,
     },
-    auteur: {
+    prenom: {
       type: String,
-      default: "Utilisateur introuvable"
+    },
+    nom: {
+      type: String,
     },
     date: {
       type: String,

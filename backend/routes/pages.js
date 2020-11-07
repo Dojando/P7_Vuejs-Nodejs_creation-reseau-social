@@ -17,5 +17,9 @@ router.post('/commentaire-utilisateur', pagesCtrl.recupererCommentaireUtilisateu
 router.post('/infos-utilisateur', pagesCtrl.infosUtilisateur);
 router.post('/supprimer-commentaire', pagesCtrl.supprimerCommentaire);
 router.post('/supprimer-article', pagesCtrl.supprimerArticle);
+router.post('/signaler-commentaire', pagesCtrl.signalerCommentaire);
+router.get('/commentaire-signale', pagesCtrl.recupererCommentaireSignale);
+router.post('/passer-admin', pagesCtrl.passerAdministrateur);
+
 
 module.exports = router;

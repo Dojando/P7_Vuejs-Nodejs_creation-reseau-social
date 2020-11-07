@@ -26,7 +26,7 @@
             <router-link :to="{ name: 'UserActivity', params: { id: userData.userId }}">{{ userData.prenom+" "+userData.nom }}
             </router-link></b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-text v-if='userData.privilege == "admin"'>Tableau de bord</b-dropdown-text>
+          <b-dropdown-text v-if='userData.privilege == "admin"'><router-link to="/signalement">Signalement</router-link></b-dropdown-text>
           <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
           <b-dropdown-item>
             <router-link to="/compte">Détails du compte</router-link>
@@ -37,7 +37,7 @@
 
     <!-- liste d'articles -->
     <div class="container mb-2" v-for="item in apiResponse" :key="item.id">
-      <articlepreview :articleId="item.id" :titre="item.titre" :auteur="item.prenom+' '+item.nom" :date="item.date_creation.split('T')[0]"></articlepreview>
+      <articlepreview :articleId="item.id" :titre="item.titre" :prenom="item.prenom" :nom="item.nom" :date="item.date_creation.split('T')[0]"></articlepreview>
     </div>
     
     <footer class="footer">
@@ -64,12 +64,7 @@
           privilege: null
         },
         userAuth: false,
-        apiResponse: [
-          // { titre: 'titre article 1', auteur: 'John Smith', date: '05/12/99', id: 1 },
-          // { titre: 'titre article 2', auteur: 'John Carmack', date: '15/05/2020', id: 2 },
-          // { titre: 'titre article 3', auteur: 'John doe', date: '25/06/41', id: 3 }
-        ],
-
+        apiResponse: [],
       }
     },
     created() {

@@ -51,7 +51,7 @@ exports.posterArticle = (req, res, next) => {
 
 exports.lireArticle = (req, res, next) => {
   try {
-    db.query('SELECT articles.*, utilisateurs.prenom, utilisateurs.nom FROM articles, utilisateurs WHERE articles.id_utilisateur = utilisateurs.id AND articles.id = ?', [req.body.articleId], function(error, results) {
+    db.query('SELECT articles.*, utilisateurs.prenom, utilisateurs.nom FROM articles LEFT OUTER JOIN utilisateurs ON articles.id_utilisateur = utilisateurs.id WHERE articles.id = ?', [req.body.articleId], function(error, results) {
       if (error) {
         console.log(error);
       }
@@ -66,7 +66,7 @@ exports.lireArticle = (req, res, next) => {
 
 exports.listerArticles = (req, res, next) => {
   try {
-    db.query('SELECT articles.id, articles.titre, articles.date_creation, articles.id_utilisateur, utilisateurs.prenom, utilisateurs.nom FROM articles, utilisateurs WHERE articles.id_utilisateur = utilisateurs.id ORDER BY articles.date_creation DESC', function(error, results) {
+    db.query('SELECT articles.id, articles.titre, articles.date_creation, articles.id_utilisateur, utilisateurs.prenom, utilisateurs.nom FROM articles LEFT OUTER JOIN utilisateurs ON articles.id_utilisateur = utilisateurs.id ORDER BY articles.date_creation DESC', function(error, results) {
       if (error) {
         console.log(error);
       }
@@ -82,7 +82,7 @@ exports.listerArticles = (req, res, next) => {
 
 exports.listerArticlesUtilisateur = (req, res, next) => {
   try {
-    db.query('SELECT articles.id, articles.titre, articles.date_creation, articles.id_utilisateur, utilisateurs.prenom, utilisateurs.nom FROM articles, utilisateurs WHERE articles.id_utilisateur = utilisateurs.id AND utilisateurs.id = ? ORDER BY articles.date_creation DESC', [req.body.userId], function(error, results) {
+    db.query('SELECT articles.id, articles.titre, articles.date_creation, articles.id_utilisateur, utilisateurs.prenom, utilisateurs.nom FROM articles LEFT OUTER JOIN utilisateurs ON articles.id_utilisateur = utilisateurs.id WHERE articles.id_utilisateur = ? ORDER BY articles.date_creation DESC', [req.body.userId], function(error, results) {
       if (error) {
         console.log(error);
       }
@@ -117,7 +117,7 @@ exports.posterCommentaire = (req, res, next) => {
 
 exports.recupererCommentaire = (req, res, next) => {
   try {
-    db.query('SELECT commentaires.*, utilisateurs.prenom, utilisateurs.nom FROM commentaires, utilisateurs WHERE commentaires.id_utilisateur = utilisateurs.id AND commentaires.id_article = ? ORDER BY commentaires.date_creation ASC', [req.body.articleId], function(error, results) {
+    db.query('SELECT commentaires.*, utilisateurs.prenom, utilisateurs.nom FROM commentaires LEFT OUTER JOIN utilisateurs ON commentaires.id_utilisateur = utilisateurs.id WHERE commentaires.id_article = ? ORDER BY commentaires.date_creation ASC', [req.body.articleId], function(error, results) {
       if (error) {
         console.log(error);
       }
@@ -132,7 +132,7 @@ exports.recupererCommentaire = (req, res, next) => {
 
 exports.recupererCommentaireUtilisateur = (req, res, next) => {
   try {
-    db.query('SELECT commentaires.*, utilisateurs.prenom, utilisateurs.nom FROM commentaires, utilisateurs WHERE commentaires.id_utilisateur = utilisateurs.id AND commentaires.id_utilisateur = ? ORDER BY commentaires.date_creation ASC', [req.body.userId], function(error, results) {
+    db.query('SELECT commentaires.*, utilisateurs.prenom, utilisateurs.nom FROM commentaires LEFT OUTER JOIN utilisateurs ON commentaires.id_utilisateur = utilisateurs.id WHERE commentaires.id_utilisateur = ? ORDER BY commentaires.date_creation ASC', [req.body.userId], function(error, results) {
       if (error) {
         console.log(error);
       }
@@ -147,7 +147,7 @@ exports.recupererCommentaireUtilisateur = (req, res, next) => {
 
 exports.infosUtilisateur = (req, res, next) => {
   try {
-    db.query('SELECT prenom, nom FROM utilisateurs WHERE id = ?', [req.body.userId], function(error, results) {
+    db.query('SELECT prenom, nom, id FROM utilisateurs WHERE id = ?', [req.body.userId], function(error, results) {
       if (error) {
         console.log(error);
       }
@@ -222,6 +222,64 @@ exports.supprimerArticle = (req, res, next) => {
         return res.status(401).json({ error });
       }      
     }
+  } catch {
+    res.status(401).json({
+      error: new Error('erreur')
+    });
+  }
+};
+
+exports.signalerCommentaire = (req, res, next) => {
+  try {
+    db.query('UPDATE commentaires SET signaler = true WHERE id = ?', [req.body.comId], function(error, results) {
+      if (error) {
+        console.log(error);
+      }
+      return res.status(200).json(results);
+    })
+  } catch {
+    res.status(401).json({
+      error: new Error('erreur')
+    });
+  }
+};
+
+exports.recupererCommentaireSignale = (req, res, next) => {
+  try {
+    db.query('SELECT commentaires.*, utilisateurs.prenom, utilisateurs.nom FROM commentaires LEFT OUTER JOIN utilisateurs ON commentaires.id_utilisateur = utilisateurs.id WHERE commentaires.signaler = true ORDER BY commentaires.date_creation ASC', function(error, results) {
+      if (error) {
+        console.log(error);
+      }
+      return res.status(200).json(results);
+    })
+  } catch {
+    res.status(401).json({
+      error: new Error('erreur')
+    });
+  }
+};
+
+exports.passerAdministrateur = (req, res, next) => {
+  try {
+    if (req.cookies.authcookie == null) {
+      console.log(req.cookies.authcookie);
+      console.log("Utilisateur non authentifié");
+      return res.status(401).json({ error });
+    } else {
+      const token = req.cookies.authcookie;
+      const decodedToken = jwt.verify(token, 'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk');
+      if(decodedToken.privilege == 'admin') {
+        db.query('UPDATE utilisateurs SET privilege = "admin" WHERE id = ?', [req.body.idUser], function(error, results) {
+          if (error) {
+            console.log(error);
+          }
+          return res.status(200).json(results);
+        })        
+      } else {
+        return res.status(401).json({ error });
+      }      
+    }
+
   } catch {
     res.status(401).json({
       error: new Error('erreur')

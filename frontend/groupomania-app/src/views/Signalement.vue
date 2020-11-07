@@ -37,41 +37,11 @@
 
     <main class="container">
       <div class="activite_utilisateur mx-auto border border-secondary" border-variant="secondary">
-        <b-card-header class="header_utilisateur">
-          <h2>Activité de 
-            <span v-if="prenomUser != null && nomUser != null">{{ prenomUser+' '+nomUser }}</span>
-            <span v-if="prenomUser == null && nomUser == null">[Utilisateur indisponible]</span>
-          </h2>
-          <b-dropdown v-if="userData.privilege == 'admin' && prenomUser != null && nomUser != null" variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
-            <template v-slot:button-content>
-              <svg width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
-            </template>
-            <b-dropdown-item v-b-modal.modal-1 variant="danger" v-if="userData.privilege == 'admin'">Passer Administrateur</b-dropdown-item>
-            <b-modal id="modal-1" title="Passer Administrateur">
-            <p class="my-4">Voulez-vous vraiment faire passer cet utilisateur Administrateur ?</p>
-            <template #modal-footer>
-              <div class="box_button_modal">
-                <b-button variant="danger" @click="passeradmin()">Oui</b-button>
-                <b-button variant="secondary" @click="$bvModal.hide('modal-1')">Non</b-button>  
-              </div>
-            </template>
-            </b-modal>
-            
-          </b-dropdown>
+        <b-card-header >
+          <h2>Commentaires signalés</h2>
         </b-card-header>
 
-        <div class="box_button">
-          <button @click="dataswap(1)" type="button" class="btn btn-secondary btn-lg swap_button border border-light">Articles</button>
-          <button @click="dataswap(2)" type="button" class="btn btn-secondary btn-lg swap_button border border-light">Commentaires</button>
-        </div>
-
-        <div v-show="datalist == 'article'" class="mx-auto box_contenu">
-          <div class="mb-3" v-for="item in articleList" :key="item.id">
-            <articlepreview :articleId="item.id" :titre="item.titre" :prenom="item.prenom" :nom="item.nom" :date="item.date_creation.split('T')[0]"></articlepreview>
-          </div>
-        </div>
-
-        <div v-show="datalist == 'commentaire'" class="mx-auto box_contenu">
+        <div class="mx-auto box_contenu">
           <div class="mb-3" v-for="item in commentaireList" :key="item.id">
             <b-card class="ml-auto mt-3" border-variant="secondary">
               <template v-slot:header>
@@ -79,6 +49,12 @@
                   <b-card-text class="small info_article">Publié par <span class="font-weight-bold" v-if="item.prenom != null && item.nom != null">{{ auteur(item.prenom, item.nom) }}</span>
                   <span class="font-weight-bold" v-if="item.prenom == null && item.nom == null">[Utilisateur indisponible]</span> le {{item.date_creation.split('T')[0]}} dans <router-link :to="{ name: 'LireArticle', params: { id: item.id_article }}">cet article</router-link>
                   </b-card-text>
+                  <b-dropdown variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
+                    <template v-slot:button-content>
+                      <svg width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
+                    </template>
+                    <b-dropdown-item variant="danger" @click="suppressioncoms(item.id, item.id_utilisateur, item.id_parent)" v-if="userData.privilege == 'admin'">Supprimer</b-dropdown-item>
+                  </b-dropdown>
                 </div>
               </template>
               <div class="small" v-html="item.contenu"></div>
@@ -95,17 +71,12 @@
 </template>
 
 <script>
-  import articlepreview from "../components/articlePreview";
   import axios from 'axios';
 
   export default {
-  components: {
-    articlepreview
-  },
 	name: 'App',
   data() {
 		return {
-      articleList: [],
       commentaireList: [],
       commentaires: null,     
       userData: {
@@ -118,47 +89,32 @@
       userAuth: false,
       datalist: 'article',
       prenomUser: null,
-      nomUser: null,
-      idUser: null
+      nomUser: null
 		}
   },
   created() {
     // verification de la connexion
     axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
     .then((response) => {
-      this.userAuth = true;
-      return this.userData = {
-        userId: response.data.userId,
-        prenom: response.data.prenom,
-        nom: response.data.nom,
-        email: response.data.email,
-        privilege: response.data.privilege
+      if (response.data.privilege == 'admin') {
+        this.userAuth = true;
+        return this.userData = {
+          userId: response.data.userId,
+          prenom: response.data.prenom,
+          nom: response.data.nom,
+          email: response.data.email,
+          privilege: response.data.privilege
+        }
+      } else {
+        this.$router.push({ name: 'Accueil' });
       }
     })
     .catch(() => { 
       this.$router.push({ name: 'Connexion' });
     })
-    
-    // Récuperation et affichage des articles
-    axios.post('http://localhost:3000/api/pages/article-utilisateur', {userId: this.$route.params.id}, { withCredentials: true })
-    .then((response) => {
-      console.log(response)
-      this.articleList = response.data;
-    })
-    .catch((error) => { 
-      console.log(error)
-    })
-    
-    // recuperation les commentaires de l'utilisateur
-    axios.post('http://localhost:3000/api/pages/commentaire-utilisateur', {userId: this.$route.params.id}, { withCredentials: true })
-    .then((response) => { 
-      console.log(response.data);
-      console.log(response);
-      return this.commentaireList = response.data;
-    })
-    .catch((error) => { 
-      console.log(error)
-    })
+      
+    // recuperation des commentaires signalés
+    this.recupcoms();
     
     // Récuperation des du nom et prénom de l'utilisateur
     axios.post('http://localhost:3000/api/pages/infos-utilisateur', {userId: this.$route.params.id}, { withCredentials: true })
@@ -166,7 +122,6 @@
       console.log(response)
       this.prenomUser = response.data[0].prenom;
       this.nomUser = response.data[0].nom;
-      this.idUser = response.data[0].id;
     })
     .catch((error) => { 
       console.log(error)
@@ -183,22 +138,25 @@
         console.log(error);
       })
     },
-    dataswap(type) {
-      if (type == 1) {
-        return this.datalist = 'article';
-      }
-      if (type == 2) {
-        return this.datalist = 'commentaire'
-      }
-    },
-    passeradmin() {
-      axios.post('http://localhost:3000/api/pages/passer-admin', {idUser: this.idUser}, { withCredentials: true })
+    suppressioncoms(comId, auteurId, parentId) {
+      axios.post('http://localhost:3000/api/pages/supprimer-commentaire', {commentaireId: comId, auteurId: auteurId, parentId: parentId}, { withCredentials: true })
       .then((response) => {
         console.log(response);
-        return window.alert("L'utilisateur est maintenant Administrateur");
+        this.recupcoms();
       })
-      .catch((error) => {
+      .catch((error) => { 
         console.log(error);
+      }) 
+    },
+    recupcoms() {
+      axios.get('http://localhost:3000/api/pages/commentaire-signale', { withCredentials: true })
+      .then((response) => { 
+        console.log(response.data);
+        console.log(response);
+        return this.commentaireList = response.data;
+      })
+      .catch((error) => { 
+        console.log(error)
       })
     },
     auteur(prenom, nom) {
@@ -274,31 +232,14 @@
   margin-bottom: 50px;
 }
 
-.header_utilisateur {
+.comment_header {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.box_button_modal {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-}
-
-.box_button {
-  display: flex;
-  margin-bottom: 30px;
-}
-
 .box_contenu {
   width: 90%;
-}
-
-.swap_button {
- width: 50%;
- border-radius: 0;
- font-size: 1.1em;
 }
 
 .button_delete {

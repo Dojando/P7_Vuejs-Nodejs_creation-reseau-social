@@ -26,7 +26,7 @@
             <router-link :to="{ name: 'UserActivity', params: { id: userData.userId }}">{{ userData.prenom+" "+userData.nom }}
             </router-link></b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
-          <b-dropdown-text v-if='userData.privilege == "admin"'>Tableau de bord</b-dropdown-text>
+          <b-dropdown-text v-if='userData.privilege == "admin"'><router-link to="/signalement">Signalement</router-link></b-dropdown-text>
           <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
           <b-dropdown-item>
             <router-link to="/compte">Détails du compte</router-link>
@@ -43,7 +43,17 @@
           <b-list-group-item><strong>Nom : </strong>{{ userData.nom }}</b-list-group-item>
           <b-list-group-item><strong>Email : </strong>{{ userData.email }}</b-list-group-item>
           <b-list-group-item><b-button @click="deconnexion()">Deconnexion</b-button></b-list-group-item>
-          <b-list-group-item><b-button variant="danger">Supprimer le compte</b-button></b-list-group-item>
+          <b-list-group-item><b-button v-b-modal.modal-1 variant="danger">Supprimer le compte</b-button>
+          </b-list-group-item>
+          <b-modal id="modal-1" title="Suppression de compte">
+          <p class="my-4">Voulez-vous vraiment supprimer votre compte ?</p>
+          <template #modal-footer>
+            <div class="box_button_modal">
+            <b-button variant="danger" @click="suppression()">Oui</b-button>
+            <b-button variant="secondary" @click="$bvModal.hide('modal-1')">Non</b-button>  
+            </div>
+          </template>
+          </b-modal>
         </b-list-group>
       </b-card>
     </div>
@@ -93,6 +103,16 @@
     .then((response) => {
       console.log(response);
       this.$router.push({ name: 'Connexion' });
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+  },
+  suppression() {
+    axios.get('http://localhost:3000/api/auth/suppression', { withCredentials: true })
+    .then((response) => {
+      console.log(response);
+      this.deconnexion();
     })
     .catch((error) => {
       console.log(error);
@@ -163,6 +183,12 @@
 
 .container * {
   margin-bottom: 5px;
+}
+
+.box_button_modal {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .details_compte {
