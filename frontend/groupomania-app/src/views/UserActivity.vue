@@ -9,7 +9,7 @@
       
       <div class="box box_img d-none d-sm-block text-center">
         <router-link to="/accueil">
-          <img src="../assets/icon-left-font-monochrome-black.png" alt="logo et nom de l'application">
+          <img src="../assets/icon-left-font-monochrome-white.png" alt="logo et nom de l'application">
         </router-link>
       </div>
       
@@ -42,7 +42,7 @@
             <span v-if="prenomUser != null && nomUser != null">{{ prenomUser+' '+nomUser }}</span>
             <span v-if="prenomUser == null && nomUser == null">[Utilisateur indisponible]</span>
           </h2>
-          <b-dropdown v-if="userData.privilege == 'admin' && prenomUser != null && nomUser != null" variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
+          <b-dropdown v-if="userData.privilege == 'admin' && prenomUser != null && nomUser != null && privilegeUser != 'admin'" variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
             <template v-slot:button-content>
               <svg width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
             </template>
@@ -60,17 +60,20 @@
           </b-dropdown>
         </b-card-header>
 
+        <!-- Boutons articles et commentaires -->
         <div class="box_button">
           <button @click="dataswap(1)" type="button" class="btn btn-secondary btn-lg swap_button border border-light">Articles</button>
           <button @click="dataswap(2)" type="button" class="btn btn-secondary btn-lg swap_button border border-light">Commentaires</button>
         </div>
 
+        <!-- liste des articles -->
         <div v-show="datalist == 'article'" class="mx-auto box_contenu">
           <div class="mb-3" v-for="item in articleList" :key="item.id">
             <articlepreview :articleId="item.id" :titre="item.titre" :prenom="item.prenom" :nom="item.nom" :date="item.date_creation.split('T')[0]"></articlepreview>
           </div>
         </div>
 
+        <!-- liste des commentaires -->
         <div v-show="datalist == 'commentaire'" class="mx-auto box_contenu">
           <div class="mb-3" v-for="item in commentaireList" :key="item.id">
             <b-card class="ml-auto mt-3" border-variant="secondary">
@@ -119,6 +122,7 @@
       datalist: 'article',
       prenomUser: null,
       nomUser: null,
+      privilegeUser: null,
       idUser: null
 		}
   },
@@ -140,7 +144,7 @@
     })
     
     // Récuperation et affichage des articles
-    axios.post('http://localhost:3000/api/pages/article-utilisateur', {userId: this.$route.params.id}, { withCredentials: true })
+    axios.post('http://localhost:3000/api/pages/article-utilisateur', {idUser: this.$route.params.id}, { withCredentials: true })
     .then((response) => {
       console.log(response)
       this.articleList = response.data;
@@ -150,7 +154,7 @@
     })
     
     // recuperation les commentaires de l'utilisateur
-    axios.post('http://localhost:3000/api/pages/commentaire-utilisateur', {userId: this.$route.params.id}, { withCredentials: true })
+    axios.post('http://localhost:3000/api/pages/commentaire-utilisateur', {idUser: this.$route.params.id}, { withCredentials: true })
     .then((response) => { 
       console.log(response.data);
       console.log(response);
@@ -161,11 +165,12 @@
     })
     
     // Récuperation des du nom et prénom de l'utilisateur
-    axios.post('http://localhost:3000/api/pages/infos-utilisateur', {userId: this.$route.params.id}, { withCredentials: true })
+    axios.post('http://localhost:3000/api/pages/infos-utilisateur', {idUser: this.$route.params.id}, { withCredentials: true })
     .then((response) => {
       console.log(response)
       this.prenomUser = response.data[0].prenom;
       this.nomUser = response.data[0].nom;
+      this.privilegeUser = response.data[0].privilege;
       this.idUser = response.data[0].id;
     })
     .catch((error) => { 
@@ -226,7 +231,7 @@
 .header {
   width: 100%;
   height: 60px;
-  background-color: rgb(199, 199, 199);
+  background-color: rgb(42, 46, 90);
   box-shadow: 0px 2px 5px 0px #8C8C8C;
   display: flex;
   margin-bottom: 50px;
@@ -313,7 +318,8 @@
 .footer {
   width: 100%;
   height: 50px;
-  background-color: rgb(199, 199, 199);
+  background-color: rgb(42, 46, 90);
+  color: rgb(228, 82, 82);
   display: flex;
   justify-content: center;
   align-items: center;

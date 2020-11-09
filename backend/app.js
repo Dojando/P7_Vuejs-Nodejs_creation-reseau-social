@@ -4,15 +4,18 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const mysql = require('mysql');
 const app = express();
+const dotenv = require('dotenv');
+
+dotenv.config({ path: './.env' });
 
 const userRoutes = require('./routes/user');
 const pagesRoutes = require('./routes/pages');
 
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "admin",
-  database: "groupomaniadb"
+  host: process.env.DATABASE_HOST,
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE
 });
 
 db.connect(function(err) {

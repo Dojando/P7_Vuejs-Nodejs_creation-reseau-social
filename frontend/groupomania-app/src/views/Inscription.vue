@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <header class="header_auth">
-      <img class="d-none d-sm-block" src="../assets/icon-left-font-monochrome-black.png" alt="logo et nom de l'application">
+      <img class="d-none d-sm-block" src="../assets/icon-left-font-monochrome-white.png" alt="logo et nom de l'application">
       <nav class="auth_links">
         <router-link to="/inscription"><button type="button" class="btn btn-secondary">Inscription</button></router-link>
         <router-link to="/connexion"><button type="button" class="btn btn-secondary">Connexion</button></router-link>
@@ -170,7 +170,7 @@
   width: 100%;
   height: 60px;
   margin-bottom: 90px;
-  background-color: rgb(199, 199, 199);
+  background-color: rgb(42, 46, 90);
   box-shadow: 0px 2px 5px 0px #8C8C8C;
   text-align: center;
   display: flex;
@@ -207,7 +207,8 @@
 .footer {
   width: 100%;
   height: 50px;
-  background-color: rgb(199, 199, 199);
+  background-color: rgb(42, 46, 90);
+  color: rgb(228, 82, 82);
   display: flex;
   justify-content: center;
   align-items: center;

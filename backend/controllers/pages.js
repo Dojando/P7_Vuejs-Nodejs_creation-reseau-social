@@ -2,10 +2,10 @@ const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
 const { response } = require('express');
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "admin",
-  database: "groupomaniadb"
+  host: process.env.DATABASE_HOST,
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE
 });
 
 exports.verifConnexion = (req, res, next) => {
@@ -15,7 +15,7 @@ exports.verifConnexion = (req, res, next) => {
       return res.status(401).json({ error });
     } else {
       const token = req.cookies.authcookie;
-      const decodedToken = jwt.verify(token, 'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk');
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       console.log(decodedToken);
       return res.status(200).json(decodedToken);
     }
@@ -38,7 +38,7 @@ exports.posterArticle = (req, res, next) => {
       return res.status(401).json({ error });
     } else {
       const token = req.cookies.authcookie;
-      const decodedToken = jwt.verify(token, 'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk');
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       db.query('INSERT INTO articles SET ?', {titre: req.body.titre, contenu: req.body.contenu, id_utilisateur: decodedToken.userId})
       return res.status(200).json({ message: "Article publié" });
     }
@@ -82,7 +82,7 @@ exports.listerArticles = (req, res, next) => {
 
 exports.listerArticlesUtilisateur = (req, res, next) => {
   try {
-    db.query('SELECT articles.id, articles.titre, articles.date_creation, articles.id_utilisateur, utilisateurs.prenom, utilisateurs.nom FROM articles LEFT OUTER JOIN utilisateurs ON articles.id_utilisateur = utilisateurs.id WHERE articles.id_utilisateur = ? ORDER BY articles.date_creation DESC', [req.body.userId], function(error, results) {
+    db.query('SELECT articles.id, articles.titre, articles.date_creation, articles.id_utilisateur, utilisateurs.prenom, utilisateurs.nom FROM articles LEFT OUTER JOIN utilisateurs ON articles.id_utilisateur = utilisateurs.id WHERE articles.id_utilisateur = ? ORDER BY articles.date_creation DESC', [req.body.idUser], function(error, results) {
       if (error) {
         console.log(error);
       }
@@ -104,7 +104,7 @@ exports.posterCommentaire = (req, res, next) => {
     } else {
       console.log(req.body)
       const token = req.cookies.authcookie;
-      const decodedToken = jwt.verify(token, 'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk');
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       db.query('INSERT INTO commentaires SET ?', {contenu: req.body.contenu, id_utilisateur: decodedToken.userId, id_article: req.body.articleId, id_parent: req.body.parentId})
       return res.status(200).json({ message: "Commentaire publié" });
     }
@@ -132,7 +132,7 @@ exports.recupererCommentaire = (req, res, next) => {
 
 exports.recupererCommentaireUtilisateur = (req, res, next) => {
   try {
-    db.query('SELECT commentaires.*, utilisateurs.prenom, utilisateurs.nom FROM commentaires LEFT OUTER JOIN utilisateurs ON commentaires.id_utilisateur = utilisateurs.id WHERE commentaires.id_utilisateur = ? ORDER BY commentaires.date_creation ASC', [req.body.userId], function(error, results) {
+    db.query('SELECT commentaires.*, utilisateurs.prenom, utilisateurs.nom FROM commentaires LEFT OUTER JOIN utilisateurs ON commentaires.id_utilisateur = utilisateurs.id WHERE commentaires.id_utilisateur = ? ORDER BY commentaires.date_creation ASC', [req.body.idUser], function(error, results) {
       if (error) {
         console.log(error);
       }
@@ -147,7 +147,7 @@ exports.recupererCommentaireUtilisateur = (req, res, next) => {
 
 exports.infosUtilisateur = (req, res, next) => {
   try {
-    db.query('SELECT prenom, nom, id FROM utilisateurs WHERE id = ?', [req.body.userId], function(error, results) {
+    db.query('SELECT prenom, nom, privilege, id FROM utilisateurs WHERE id = ?', [req.body.idUser], function(error, results) {
       if (error) {
         console.log(error);
       }
@@ -168,7 +168,7 @@ exports.supprimerCommentaire = (req, res, next) => {
       return res.status(401).json({ error });
     } else {
       const token = req.cookies.authcookie;
-      const decodedToken = jwt.verify(token, 'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk');
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       if(decodedToken.userId == req.body.auteurId || decodedToken.privilege == 'admin') {
         if (req.body.parentId == null) {
           db.query('DELETE FROM commentaires WHERE id = ? OR id_parent = ?', [req.body.commentaireId, req.body.commentaireId], function(error, results) {
@@ -205,7 +205,7 @@ exports.supprimerArticle = (req, res, next) => {
     } else {
       console.log(req.body);
       const token = req.cookies.authcookie;
-      const decodedToken = jwt.verify(token, 'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk');
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       if(decodedToken.userId == req.body.auteurId || decodedToken.privilege == 'admin') {
         db.query('DELETE FROM articles WHERE id = ?', [req.body.articleId], function(error, results) {
           if (error) {
@@ -267,7 +267,7 @@ exports.passerAdministrateur = (req, res, next) => {
       return res.status(401).json({ error });
     } else {
       const token = req.cookies.authcookie;
-      const decodedToken = jwt.verify(token, 'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk');
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       if(decodedToken.privilege == 'admin') {
         db.query('UPDATE utilisateurs SET privilege = "admin" WHERE id = ?', [req.body.idUser], function(error, results) {
           if (error) {

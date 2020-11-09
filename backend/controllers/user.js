@@ -2,10 +2,10 @@ const mysql = require('mysql');
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "admin",
-  database: "groupomaniadb"
+  host: process.env.DATABASE_HOST,
+  user: process.env.DATABASE_USER,
+  password: process.env.DATABASE_PASSWORD,
+  database: process.env.DATABASE
 });
 
 
@@ -22,13 +22,10 @@ exports.signup = (req, res, next) => {
           db.query('INSERT INTO utilisateurs SET ?', {prenom: req.body.prenom, nom: req.body.nom, email: req.body.email, mot_de_passe: hash})
           })
         .then(() => {
-          console.log("test 1");
           db.query('SELECT * FROM utilisateurs WHERE email = ?', [req.body.email], function(error, results) {
             if (error) {
               console.log(error);
             }
-            console.log(results);
-            console.log("test 4");
             const token = jwt.sign(
               { 
                 userId: results[0].id,
@@ -37,9 +34,8 @@ exports.signup = (req, res, next) => {
                 email: results[0].email,
                 privilege: results[0].privilege
               },
-              'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk',
+              process.env.TOKEN_KEY,
             )
-            console.log(token);
             res.cookie('authcookie',token,{
               expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
               httpOnly:true});
@@ -52,10 +48,8 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-  console.log(req.body)
   let email = req.body.email;
   let password = req.body.password;
-  console.log(req.body);
   db.query('SELECT * FROM utilisateurs WHERE email = ?', [email], function(error, results) {
     if (error) {
       console.log(error);
@@ -63,7 +57,6 @@ exports.login = (req, res, next) => {
     if (results.length == 0) {
       return res.status(401).json({ message: 'Données invalides' });
     } else {
-      console.log(results);
       bcrypt.compare(password, results[0].mot_de_passe)
         .then(valid => {
           if (valid == false) {
@@ -77,9 +70,8 @@ exports.login = (req, res, next) => {
                 email: results[0].email,
                 privilege: results[0].privilege
               },
-              'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk',
+              process.env.TOKEN_KEY,
             )
-            console.log(token);
             res.cookie('authcookie',token,{
               expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
               httpOnly:true});
@@ -99,8 +91,7 @@ exports.suppression = (req, res, next) => {
       return res.status(401).json({ error });
     } else {
       const token = req.cookies.authcookie;
-      const decodedToken = jwt.verify(token, 'tUUmO1TPYO8MHOGQwt8QiW8T5IDoSW-wuN8kLEvE1J5-zHAGuNGDgT26sCWdrPKcyy_Q8XTuXjP0wkdw18SFFJ--c1vWoZf1zzjgpJOyffCfUu2N-kCjEpyzpsIC6E-5Oyfuu28r9TT0JMtN_-kblIplyNjNKBxoLcptQ6P4jFk');
-      console.log(decodedToken);
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       db.query('DELETE FROM utilisateurs WHERE id = ?', [decodedToken.userId], function(error, results) {
         if (error) {
           console.log(error);

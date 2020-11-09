@@ -6,20 +6,20 @@ const auth = require('../middleware/auth');
 const pagesCtrl = require('../controllers/pages');
 
 router.get('/auth-verif', pagesCtrl.verifConnexion);
-router.get('/deconnexion', pagesCtrl.deconnexion);
-router.post('/article', pagesCtrl.posterArticle);
-router.post('/lire-article', pagesCtrl.lireArticle);
-router.get('/articles', pagesCtrl.listerArticles);
-router.post('/article-utilisateur', pagesCtrl.listerArticlesUtilisateur);
-router.post('/commentaire', pagesCtrl.posterCommentaire);
-router.post('/recuperer-commentaire', pagesCtrl.recupererCommentaire);
-router.post('/commentaire-utilisateur', pagesCtrl.recupererCommentaireUtilisateur);
-router.post('/infos-utilisateur', pagesCtrl.infosUtilisateur);
-router.post('/supprimer-commentaire', pagesCtrl.supprimerCommentaire);
-router.post('/supprimer-article', pagesCtrl.supprimerArticle);
-router.post('/signaler-commentaire', pagesCtrl.signalerCommentaire);
-router.get('/commentaire-signale', pagesCtrl.recupererCommentaireSignale);
-router.post('/passer-admin', pagesCtrl.passerAdministrateur);
+router.get('/deconnexion', auth, pagesCtrl.deconnexion);
+router.post('/article', auth, pagesCtrl.posterArticle);
+router.post('/lire-article', auth, pagesCtrl.lireArticle);
+router.get('/articles', auth, pagesCtrl.listerArticles);
+router.post('/article-utilisateur', auth, pagesCtrl.listerArticlesUtilisateur);
+router.post('/commentaire', auth, pagesCtrl.posterCommentaire);
+router.post('/recuperer-commentaire', auth, pagesCtrl.recupererCommentaire);
+router.post('/commentaire-utilisateur', auth, pagesCtrl.recupererCommentaireUtilisateur);
+router.post('/infos-utilisateur', auth, pagesCtrl.infosUtilisateur);
+router.post('/supprimer-commentaire', auth, pagesCtrl.supprimerCommentaire);
+router.post('/supprimer-article', auth, pagesCtrl.supprimerArticle);
+router.post('/signaler-commentaire', auth, pagesCtrl.signalerCommentaire);
+router.get('/commentaire-signale', auth, pagesCtrl.recupererCommentaireSignale);
+router.post('/passer-admin', auth, pagesCtrl.passerAdministrateur);
 
 
 module.exports = router;

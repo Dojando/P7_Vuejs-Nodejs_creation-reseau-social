@@ -9,7 +9,7 @@
       
       <div class="box box_img d-none d-sm-block text-center">
         <router-link to="/accueil">
-          <img src="../assets/icon-left-font-monochrome-black.png" alt="logo et nom de l'application">
+          <img src="../assets/icon-left-font-monochrome-white.png" alt="logo et nom de l'application">
         </router-link>
       </div>
       
@@ -161,7 +161,7 @@ import axios from 'axios';
 .header {
   width: 100%;
   height: 60px;
-  background-color: rgb(199, 199, 199);
+  background-color: rgb(42, 46, 90);
   box-shadow: 0px 2px 5px 0px #8C8C8C;
   display: flex;
   margin-bottom: 50px;
@@ -218,7 +218,8 @@ textarea.form-control {
 .footer {
   width: 100%;
   height: 50px;
-  background-color: rgb(199, 199, 199);
+  background-color: rgb(42, 46, 90);
+  color: rgb(228, 82, 82);
   display: flex;
   justify-content: center;
   align-items: center;
