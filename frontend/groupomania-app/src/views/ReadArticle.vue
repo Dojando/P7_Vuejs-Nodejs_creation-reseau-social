@@ -3,13 +3,23 @@
     <header class="header">
       <div class="box box_retour">
         <router-link to="/accueil">
-          <b-button class="btn_accueil" variant="secondary">Retour à l'accueil</b-button>
+          <b-button class="btn_accueil" variant="secondary">
+            <span class="texte_accueil">Retour à l'accueil</span>
+            <svg class="svg-icon svg_accueil" viewBox="0 0 20 20" fill="white">
+							<path d="M18.121,9.88l-7.832-7.836c-0.155-0.158-0.428-0.155-0.584,0L1.842,9.913c-0.262,0.263-0.073,0.705,0.292,0.705h2.069v7.042c0,0.227,0.187,0.414,0.414,0.414h3.725c0.228,0,0.414-0.188,0.414-0.414v-3.313h2.483v3.313c0,0.227,0.187,0.414,0.413,0.414h3.726c0.229,0,0.414-0.188,0.414-0.414v-7.042h2.068h0.004C18.331,10.617,18.389,10.146,18.121,9.88 M14.963,17.245h-2.896v-3.313c0-0.229-0.186-0.415-0.414-0.415H8.342c-0.228,0-0.414,0.187-0.414,0.415v3.313H5.032v-6.628h9.931V17.245z M3.133,9.79l6.864-6.868l6.867,6.868H3.133z"></path>
+						</svg>
+          </b-button>
         </router-link>
       </div>
       
       <div class="box box_img d-none d-sm-block text-center">
         <router-link to="/accueil">
           <img src="../assets/icon-left-font-monochrome-white.png" alt="logo et nom de l'application">
+        </router-link>
+      </div>
+      <div class="box box_img_logo text-center">
+        <router-link to="/accueil">
+          <img src="../assets/icon.png" alt="logo et nom de l'application">
         </router-link>
       </div>
       
@@ -23,14 +33,14 @@
             </svg>
           </template>
           <b-dropdown-text>
-            <router-link :to="{ name: 'UserActivity', params: { id: userData.userId }}">{{ userData.prenom+" "+userData.nom }}
+            <router-link :to="{ name: 'me' }">{{ userData.prenom+" "+userData.nom }}
             </router-link></b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-text v-if='userData.privilege == "admin"'><router-link to="/signalement">Signalement</router-link></b-dropdown-text>
-          <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
           <b-dropdown-item>
             <router-link to="/compte">Détails du compte</router-link>
           </b-dropdown-item>
+          <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
         </b-dropdown>
       </div>
     </header>
@@ -38,25 +48,31 @@
     <main class="container">
       <article>
         <b-card class="contenu_article mx-auto" border-variant="secondary">
+          <!-- titre de l'article et menu des acions possible -->
           <template v-slot:header>
             <div class="titre_menu">
               <h2>{{ article.titre }}</h2>
               <b-dropdown v-if="article.id_utilisateur == userData.userId || userData.privilege == 'admin'" variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
                 <template v-slot:button-content>
-                  <svg width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
+                  <span class="menu_texte">actions</span>
+                  <svg class="menu_svg" width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path>
+                  </svg>
                 </template>
                 <b-dropdown-item variant="danger" @click="suppressionarticle()">Supprimer</b-dropdown-item>
               </b-dropdown>
             </div>
           </template>
+          <!-- contenu de l'article -->
           <div class="text_article" v-html="article.contenu">
           </div>
+          <!-- footer de l'article avec la date et l'auteur -->
           <template v-slot:footer>
             <b-card-text class="small info_article">
               Publié par 
               <router-link v-if="article.prenom != null && article.nom != null" :to="{ name: 'UserActivity', params: { id: article.id_utilisateur }}">{{ article.prenom+' '+article.nom }}</router-link>
               <span class="font-weight-bold" v-if="article.prenom == null && article.nom == null">[Utilisateur indisponible]</span> le {{ article.date_creation }}
             </b-card-text>
+            <!-- bouton pour copier le lien de l'article -->
             <b-button @click="copylink()" variant="outline-secondary">Copier le lien de l'article</b-button>
           </template>
         </b-card>
@@ -67,7 +83,7 @@
         <template v-slot:header>
           <h3>Commentaires</h3>
         </template>
-
+        <!-- Zone de texte pour écrire un commentaire -->
         <div class="mx-auto border border-secondary">
           <b-card-header>
             <p class="h5">Postez un commentaire</p>  
@@ -89,12 +105,15 @@
           <div v-for="parent in commentairesParents()" :key="parent.id">
             <b-card class="mx-auto mt-3" border-variant="secondary">
               <template v-slot:header>
+                <!-- header du commentaire -->
                 <div class="comment_header">
                   <b-card-text class="small info_article">Publié par <router-link v-if="parent.prenom != null && parent.nom != null" :to="{ name: 'UserActivity', params: { id: parent.id_utilisateur }}">{{ auteur(parent.prenom, parent.nom) }}</router-link>
                   <span class="font-weight-bold" v-if="parent.prenom == null && parent.nom == null">[Utilisateur indisponible]</span> le {{ parent.date_creation.split('T')[0] }}</b-card-text>
                   <b-dropdown variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
+                    <!-- liste d'actions possible liées au commentaire -->
                     <template v-slot:button-content>
-                      <svg width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
+                      <span class="menu_texte">actions</span>
+                      <svg class="menu_svg" width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
                     </template>
                     <b-dropdown-item v-b-toggle="JSON.stringify(parent.id)">Répondre</b-dropdown-item>
                     <b-dropdown-divider></b-dropdown-divider>
@@ -103,8 +122,10 @@
                   </b-dropdown>
                 </div>
               </template>
+              <!-- contenu du commentaire -->
               <div class="small" v-html="parent.contenu"></div>
             </b-card>
+            <!-- zone de texte pour écrire une réponse -->
             <b-collapse :id="JSON.stringify(parent.id)" class="mt-2">
               <b-card class="mx-auto">
                 <div class="form-group">
@@ -124,18 +145,21 @@
             <div class="mb-3" v-for="child in commentairesEnfants(parent.id)" :key="child.id">
               <b-card style="width: 90%" class="ml-auto mt-3" border-variant="secondary">
                 <template v-slot:header>
+                  <!-- header de la reponse -->
                   <div class="comment_header">
                     <b-card-text class="small info_article">Publié par <router-link v-if="child.prenom != null && child.nom != null" :to="{ name: 'UserActivity', params: { id: child.id_utilisateur }}">{{ auteur(child.prenom, child.nom) }}</router-link>
                   <span class="font-weight-bold" v-if="child.prenom == null && child.nom == null">[Utilisateur indisponible]</span> le {{child.date_creation.split('T')[0]}}</b-card-text>
                   <b-dropdown variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
                     <template v-slot:button-content>
-                      <svg width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
+                      <span class="menu_texte">actions</span>
+                      <svg class="menu_svg" width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
                     </template>
                     <b-dropdown-item variant="danger" @click="suppressioncoms(child.id, child.id_utilisateur, child.id_parent)" v-if="child.id_utilisateur == userData.userId || userData.privilege == 'admin'">Supprimer</b-dropdown-item>
                     <b-dropdown-item variant="danger" v-if="child.id_utilisateur != userData.userId && userData.privilege != 'admin'" @click="signalementcoms(child.id)">Signaler</b-dropdown-item>
                   </b-dropdown>
                   </div>
                 </template>
+                <!-- contenu de la réponse -->
                 <div class="small" v-html="child.contenu"></div>
               </b-card> 
             </div>
@@ -205,7 +229,6 @@ import axios from 'axios';
     .catch((error) => { 
       console.log(error)
     })
-
     this.recupcoms()
   },
   methods: {
@@ -237,8 +260,7 @@ import axios from 'axios';
     },
     deconnexion() {
       axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
-      .then((response) => {
-        console.log(response);
+      .then(() => {
         this.$router.push({ name: 'Connexion' });
       })
       .catch((error) => {
@@ -249,13 +271,13 @@ import axios from 'axios';
       // recuperation des commentaires de l'article
       axios.post('http://localhost:3000/api/pages/recuperer-commentaire', {articleId: this.$route.params.id}, { withCredentials: true })
       .then((response) => { 
-        console.log(response.data);
         return this.commentaires = response.data;
       })
       .catch((error) => { 
         console.log(error)
       })      
     },
+    // validation des données et poste du commentaire
     commentaire() {
       let valid = true;
       this.errorMessageCommentaire = null;
@@ -267,8 +289,7 @@ import axios from 'axios';
       }      
       if (valid == true) {
         axios.post('http://localhost:3000/api/pages/commentaire', {articleId: this.$route.params.id, contenu: this.commentaireContenu}, { withCredentials: true })
-        .then((response) => {
-          console.log(response);
+        .then(() => {
           this.commentaireContenu = "";
           this.valideMessageCommentaire = true;
           this.recupcoms();
@@ -278,6 +299,7 @@ import axios from 'axios';
         }) 
       }
     },
+    // validation des données et poste de la réponse
     reponse(parent) {
       let valid = true;
       this.errorMessageReponse = null;
@@ -288,8 +310,7 @@ import axios from 'axios';
       }      
       if (valid == true) {
         axios.post('http://localhost:3000/api/pages/commentaire', {articleId: this.$route.params.id, contenu: this.reponseContenu, parentId: parent}, { withCredentials: true })
-        .then((response) => {
-          console.log(response);
+        .then(() => {
           this.reponseContenu = "";
           this.valideMessageReponse = true;
           this.recupcoms();
@@ -299,30 +320,30 @@ import axios from 'axios';
         }) 
       }
     },
+    // suppression de commentaire
     suppressioncoms(comId, auteurId, parentId) {
       axios.post('http://localhost:3000/api/pages/supprimer-commentaire', {commentaireId: comId, auteurId: auteurId, parentId: parentId}, { withCredentials: true })
-      .then((response) => {
-        console.log(response);
+      .then(() => {
         this.recupcoms();
       })
       .catch((error) => { 
         console.log(error);
       }) 
     },
+    // suppression d'article
     suppressionarticle() {
       axios.post('http://localhost:3000/api/pages/supprimer-article', {articleId: this.article.id, auteurId: this.article.id_utilisateur}, { withCredentials: true })
-      .then((response) => {
-        console.log(response);
+      .then(() => {
         this.$router.push({ name: 'Accueil' });
       })
       .catch((error) => { 
         console.log(error);
       }) 
     },
+    // signalement de commentaire
     signalementcoms(comId) {
       axios.post('http://localhost:3000/api/pages/signaler-commentaire', {comId: comId}, { withCredentials: true })
-      .then((response) => {
-        console.log(response);
+      .then(() => {
         return window.alert("Commentaire signalé");
       })
       .catch((error) => { 
@@ -378,8 +399,10 @@ import axios from 'axios';
   margin-bottom: 50px;
 }
 
-.header img {
-  width: 200px;
+.box_img img {
+  width: 170px;
+  height: 60px;
+  object-fit: cover;
 }
 
 .box {
@@ -395,6 +418,15 @@ import axios from 'axios';
 
 .box_img {
   align-self: center;
+}
+
+.svg_accueil {
+  width: 30px;
+}
+
+.box_img_logo img {
+  width: 60px;
+  object-fit: cover;
 }
 
 .box_drop {
@@ -480,10 +512,25 @@ import axios from 'axios';
   bottom: 0px;
 }
 
-/* Media queries */
+/* media queries */
 @media screen and (max-width: 575px) {
-  .box_retour {
-    flex: 2;
+  .texte_accueil {
+    display: none;
+  }
+  .menu_texte {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .box_img_logo {
+    display: none;
+  }
+  .svg_accueil {
+    display: none;
+  }
+  .menu_svg {
+    display: none;
   }
 }
 </style>

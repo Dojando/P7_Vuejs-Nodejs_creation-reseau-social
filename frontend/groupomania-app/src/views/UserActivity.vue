@@ -3,13 +3,23 @@
     <header class="header">
       <div class="box box_retour">
         <router-link to="/accueil">
-          <b-button class="btn_accueil" variant="secondary">Retour à l'accueil</b-button>
+          <b-button class="btn_accueil" variant="secondary">
+            <span class="texte_accueil">Retour à l'accueil</span>
+            <svg class="svg-icon svg_accueil" viewBox="0 0 20 20" fill="white">
+							<path d="M18.121,9.88l-7.832-7.836c-0.155-0.158-0.428-0.155-0.584,0L1.842,9.913c-0.262,0.263-0.073,0.705,0.292,0.705h2.069v7.042c0,0.227,0.187,0.414,0.414,0.414h3.725c0.228,0,0.414-0.188,0.414-0.414v-3.313h2.483v3.313c0,0.227,0.187,0.414,0.413,0.414h3.726c0.229,0,0.414-0.188,0.414-0.414v-7.042h2.068h0.004C18.331,10.617,18.389,10.146,18.121,9.88 M14.963,17.245h-2.896v-3.313c0-0.229-0.186-0.415-0.414-0.415H8.342c-0.228,0-0.414,0.187-0.414,0.415v3.313H5.032v-6.628h9.931V17.245z M3.133,9.79l6.864-6.868l6.867,6.868H3.133z"></path>
+						</svg> 
+          </b-button>
         </router-link>
       </div>
       
       <div class="box box_img d-none d-sm-block text-center">
         <router-link to="/accueil">
           <img src="../assets/icon-left-font-monochrome-white.png" alt="logo et nom de l'application">
+        </router-link>
+      </div>
+      <div class="box box_img_logo text-center">
+        <router-link to="/accueil">
+          <img src="../assets/icon.png" alt="logo et nom de l'application">
         </router-link>
       </div>
       
@@ -23,28 +33,31 @@
             </svg>
           </template>
           <b-dropdown-text>
-            <router-link :to="{ name: 'UserActivity', params: { id: userData.userId }}">{{ userData.prenom+" "+userData.nom }}
+            <router-link :to="{ name: 'me' }">{{ userData.prenom+" "+userData.nom }}
             </router-link></b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-text v-if='userData.privilege == "admin"'><router-link to="/signalement">Signalement</router-link></b-dropdown-text>
-          <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
           <b-dropdown-item>
             <router-link to="/compte">Détails du compte</router-link>
           </b-dropdown-item>
+          <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
         </b-dropdown>
       </div>
     </header>
 
     <main class="container">
       <div class="activite_utilisateur mx-auto border border-secondary" border-variant="secondary">
+        <!-- nom de l'utilisateur -->
         <b-card-header class="header_utilisateur">
           <h2>Activité de 
             <span v-if="prenomUser != null && nomUser != null">{{ prenomUser+' '+nomUser }}</span>
             <span v-if="prenomUser == null && nomUser == null">[Utilisateur indisponible]</span>
           </h2>
+          <!-- menu d'actions possible -->
           <b-dropdown v-if="userData.privilege == 'admin' && prenomUser != null && nomUser != null && privilegeUser != 'admin'" variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
             <template v-slot:button-content>
-              <svg width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
+              <span class="menu_texte">actions</span>
+              <svg class="menu_svg" width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
             </template>
             <b-dropdown-item v-b-modal.modal-1 variant="danger" v-if="userData.privilege == 'admin'">Passer Administrateur</b-dropdown-item>
             <b-modal id="modal-1" title="Passer Administrateur">
@@ -56,7 +69,6 @@
               </div>
             </template>
             </b-modal>
-            
           </b-dropdown>
         </b-card-header>
 
@@ -123,7 +135,7 @@
       prenomUser: null,
       nomUser: null,
       privilegeUser: null,
-      idUser: null
+      idUser: null,
 		}
   },
   created() {
@@ -143,45 +155,12 @@
       this.$router.push({ name: 'Connexion' });
     })
     
-    // Récuperation et affichage des articles
-    axios.post('http://localhost:3000/api/pages/article-utilisateur', {idUser: this.$route.params.id}, { withCredentials: true })
-    .then((response) => {
-      console.log(response)
-      this.articleList = response.data;
-    })
-    .catch((error) => { 
-      console.log(error)
-    })
-    
-    // recuperation les commentaires de l'utilisateur
-    axios.post('http://localhost:3000/api/pages/commentaire-utilisateur', {idUser: this.$route.params.id}, { withCredentials: true })
-    .then((response) => { 
-      console.log(response.data);
-      console.log(response);
-      return this.commentaireList = response.data;
-    })
-    .catch((error) => { 
-      console.log(error)
-    })
-    
-    // Récuperation des du nom et prénom de l'utilisateur
-    axios.post('http://localhost:3000/api/pages/infos-utilisateur', {idUser: this.$route.params.id}, { withCredentials: true })
-    .then((response) => {
-      console.log(response)
-      this.prenomUser = response.data[0].prenom;
-      this.nomUser = response.data[0].nom;
-      this.privilegeUser = response.data[0].privilege;
-      this.idUser = response.data[0].id;
-    })
-    .catch((error) => { 
-      console.log(error)
-    })
+    this.useractivity();
   },
   methods: {
     deconnexion() {
       axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
-      .then((response) => {
-        console.log(response);
+      .then(() => {
         this.$router.push({ name: 'Connexion' });
       })
       .catch((error) => {
@@ -196,10 +175,10 @@
         return this.datalist = 'commentaire'
       }
     },
+    // faire passer administrateur un utilisateur basique
     passeradmin() {
       axios.post('http://localhost:3000/api/pages/passer-admin', {idUser: this.idUser}, { withCredentials: true })
-      .then((response) => {
-        console.log(response);
+      .then(() => {
         return window.alert("L'utilisateur est maintenant Administrateur");
       })
       .catch((error) => {
@@ -208,6 +187,37 @@
     },
     auteur(prenom, nom) {
       return prenom+' '+nom;
+    },
+    useractivity() {
+      // Récuperation des du nom et prénom de l'utilisateur
+      axios.post('http://localhost:3000/api/pages/infos-utilisateur', {idUser: this.$route.params.id}, { withCredentials: true })
+      .then((response) => {
+        this.prenomUser = response.data[0].prenom;
+        this.nomUser = response.data[0].nom;
+        this.privilegeUser = response.data[0].privilege;
+        this.idUser = response.data[0].id;
+      })
+      .catch((error) => { 
+        console.log(error)
+      })
+
+      // Récuperation et affichage des articles
+      axios.post('http://localhost:3000/api/pages/article-utilisateur', {idUser: this.$route.params.id}, { withCredentials: true })
+      .then((response) => {
+        this.articleList = response.data;
+      })
+      .catch((error) => { 
+        console.log(error)
+      })
+      
+      // recuperation les commentaires de l'utilisateur
+      axios.post('http://localhost:3000/api/pages/commentaire-utilisateur', {idUser: this.$route.params.id}, { withCredentials: true })
+      .then((response) => { 
+        return this.commentaireList = response.data;
+      })
+      .catch((error) => { 
+        console.log(error)
+      })
     }
 	}
 }
@@ -237,8 +247,19 @@
   margin-bottom: 50px;
 }
 
-.header img {
-  width: 200px;
+.box_img img {
+  width: 170px;
+  height: 60px;
+  object-fit: cover;
+}
+
+.box_img_logo img {
+  width: 60px;
+  object-fit: cover;
+}
+
+.svg_accueil {
+  width: 30px;
 }
 
 .box {
@@ -328,10 +349,25 @@
   bottom: 0px;
 }
 
-/* Media queries */
+/* media queries */
 @media screen and (max-width: 575px) {
-  .box_retour {
-    flex: 2;
+  .texte_accueil {
+    display: none;
+  }
+  .menu_texte {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .box_img_logo {
+    display: none;
+  }
+  .svg_accueil {
+    display: none;
+  }
+  .menu_svg {
+    display: none;
   }
 }
 </style>

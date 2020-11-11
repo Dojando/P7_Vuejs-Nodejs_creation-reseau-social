@@ -16,7 +16,6 @@ exports.verifConnexion = (req, res, next) => {
     } else {
       const token = req.cookies.authcookie;
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
-      console.log(decodedToken);
       return res.status(200).json(decodedToken);
     }
   } catch {
@@ -70,7 +69,6 @@ exports.listerArticles = (req, res, next) => {
       if (error) {
         console.log(error);
       }
-      console.log(results);
       return res.status(200).json(results);
     })
   } catch {
@@ -86,7 +84,6 @@ exports.listerArticlesUtilisateur = (req, res, next) => {
       if (error) {
         console.log(error);
       }
-      console.log(results);
       return res.status(200).json(results);
     })
   } catch {
@@ -102,7 +99,6 @@ exports.posterCommentaire = (req, res, next) => {
       console.log("Utilisateur non authentifié");
       return res.status(401).json({ error });
     } else {
-      console.log(req.body)
       const token = req.cookies.authcookie;
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       db.query('INSERT INTO commentaires SET ?', {contenu: req.body.contenu, id_utilisateur: decodedToken.userId, id_article: req.body.articleId, id_parent: req.body.parentId})
@@ -163,7 +159,6 @@ exports.infosUtilisateur = (req, res, next) => {
 exports.supprimerCommentaire = (req, res, next) => {
   try {
     if (req.cookies.authcookie == null) {
-      console.log(req.cookies.authcookie);
       console.log("Utilisateur non authentifié");
       return res.status(401).json({ error });
     } else {
@@ -199,11 +194,9 @@ exports.supprimerCommentaire = (req, res, next) => {
 exports.supprimerArticle = (req, res, next) => {
   try {
     if (req.cookies.authcookie == null) {
-      console.log(req.cookies.authcookie);
       console.log("Utilisateur non authentifié");
       return res.status(401).json({ error });
     } else {
-      console.log(req.body);
       const token = req.cookies.authcookie;
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
       if(decodedToken.userId == req.body.auteurId || decodedToken.privilege == 'admin') {
@@ -262,7 +255,6 @@ exports.recupererCommentaireSignale = (req, res, next) => {
 exports.passerAdministrateur = (req, res, next) => {
   try {
     if (req.cookies.authcookie == null) {
-      console.log(req.cookies.authcookie);
       console.log("Utilisateur non authentifié");
       return res.status(401).json({ error });
     } else {

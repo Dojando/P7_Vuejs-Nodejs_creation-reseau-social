@@ -1,18 +1,19 @@
 <template>
   <div id="app">
     <header class="header_auth">
-      <img class="d-none d-sm-block" src="../assets/icon-left-font-monochrome-white.png" alt="logo et nom de l'application">
+      <img src="../assets/icon-left-font-monochrome-white.png" alt="logo et nom de l'application">
       <nav class="auth_links">
-        <router-link to="/inscription"><button type="button" class="btn btn-secondary">Inscription</button></router-link>
         <router-link to="/connexion"><button type="button" class="btn btn-secondary">Connexion</button></router-link>
       </nav>
     </header>
 
     <main class="container">
-      <form class="form_auth needs-validation" novalidate>
-        <p class="h2">Connexion</p>
+      <b-card class="mx-auto" border-variant="secondary" header-border-variant="secondary">
+        <template #header>
+          <h4 class="h2">Connexion</h4>
+        </template>
         <!-- champ email -->
-        <div class="form-group">
+        <div class="form-group" >
           <label for="email">Adresse Email</label>
           <input v-model="email" type="email" class="form-control" id="email" placeholder="Votre Email" required>
           <!-- message d'erreur -->
@@ -29,12 +30,20 @@
             Champ vide
           </b-card-text>
         </div>
-        <!-- bouton de validation -->
-        <button @click="connexion()" class="btn btn-primary">Me connecter</button>
-        <b-card-text v-show="errorMessage != null" class="small text-danger mt-2">
-          {{ errorMessage }}
-        </b-card-text>
-      </form>
+        <div>
+          <!-- bouton de validation -->
+          <button @click="connexion()" class="btn btn-primary">Me connecter</button>
+          <b-card-text v-show="errorMessage != null" class="small text-danger mt-2">
+            {{ errorMessage }}
+          </b-card-text>            
+        </div>
+      </b-card>
+      <b-card-text class="mt-3 text-center">
+        <router-link to="/inscription">
+          Pas de compte ? Inscrivez-vous ici !
+        </router-link>
+      </b-card-text> 
+              
     </main>
 
     <footer class="footer">
@@ -58,6 +67,7 @@
     }
   },
   created() {
+    // si l'utilisateur a deja un token valide, redirection vers l'accueil
     axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
     .then(() => {
       this.$router.push({ name: 'Accueil' });
@@ -82,8 +92,7 @@
           email: this.email,
           password: this.password
         }, { withCredentials: true })
-        .then((response) => {
-          console.log(response);
+        .then(() => {
           this.$router.push({ name: 'Accueil' });
         })
         .catch((error) => {
@@ -110,6 +119,7 @@
   margin-bottom: 100px;
 }
 
+/* header */
 .header_auth {
   width: 100%;
   height: 60px;
@@ -123,12 +133,10 @@
 }
 
 .header_auth img {
-  width: 200px;
+  width: 170px;
   margin-left: 15px;
-}
-
-.auth_links {
-  display: flex;
+  height: 60px;
+  object-fit: cover;
 }
 
 .auth_links > * {
@@ -136,12 +144,8 @@
   font-size: 1.2em;
 }
 
+/* body */
 .container {
-  display: flex;
-  justify-content: center;
-}
-
-.form_auth {
   width: 90%;
   max-width: 500px;
   min-width: 270px;
@@ -159,11 +163,5 @@
   font-size: 0.9em;
   position: fixed;
   bottom: 0px;
-}
-
-@media screen and (max-width: 575px) {
-  .header_auth {
-    justify-content: center;
-  }
 }
 </style>

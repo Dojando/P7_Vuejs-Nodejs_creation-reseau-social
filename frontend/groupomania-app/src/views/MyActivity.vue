@@ -7,7 +7,7 @@
             <span class="texte_accueil">Retour à l'accueil</span>
             <svg class="svg-icon svg_accueil" viewBox="0 0 20 20" fill="white">
 							<path d="M18.121,9.88l-7.832-7.836c-0.155-0.158-0.428-0.155-0.584,0L1.842,9.913c-0.262,0.263-0.073,0.705,0.292,0.705h2.069v7.042c0,0.227,0.187,0.414,0.414,0.414h3.725c0.228,0,0.414-0.188,0.414-0.414v-3.313h2.483v3.313c0,0.227,0.187,0.414,0.413,0.414h3.726c0.229,0,0.414-0.188,0.414-0.414v-7.042h2.068h0.004C18.331,10.617,18.389,10.146,18.121,9.88 M14.963,17.245h-2.896v-3.313c0-0.229-0.186-0.415-0.414-0.415H8.342c-0.228,0-0.414,0.187-0.414,0.415v3.313H5.032v-6.628h9.931V17.245z M3.133,9.79l6.864-6.868l6.867,6.868H3.133z"></path>
-						</svg>  
+						</svg> 
           </b-button>
         </router-link>
       </div>
@@ -46,31 +46,39 @@
     </header>
 
     <main class="container">
+      <!-- Nom de l'utilisateur -->
       <div class="activite_utilisateur mx-auto border border-secondary" border-variant="secondary">
-        <b-card-header >
-          <h2>Commentaires signalés</h2>
+        <b-card-header class="header_utilisateur">
+          <h2>Activité de 
+            <span v-if="userData.prenom != null && userData.nom != null">{{ userData.prenom+' '+userData.nom }}</span>
+            <span v-if="userData.prenom == null && userData.nom == null">[Utilisateur indisponible]</span>
+          </h2>
         </b-card-header>
 
-        <div class="mx-auto box_contenu">
+        <!-- Boutons articles et commentaires -->
+        <div class="box_button">
+          <button @click="dataswap(1)" type="button" class="btn btn-secondary btn-lg swap_button border border-light">Articles</button>
+          <button @click="dataswap(2)" type="button" class="btn btn-secondary btn-lg swap_button border border-light">Commentaires</button>
+        </div>
+
+        <!-- liste des articles -->
+        <div v-show="datalist == 'article'" class="mx-auto box_contenu">
+          <div class="mb-3" v-for="item in articleList" :key="item.id">
+            <articlepreview :articleId="item.id" :titre="item.titre" :prenom="item.prenom" :nom="item.nom" :date="item.date_creation.split('T')[0]"></articlepreview>
+          </div>
+        </div>
+
+        <!-- liste des commentaires -->
+        <div v-show="datalist == 'commentaire'" class="mx-auto box_contenu">
           <div class="mb-3" v-for="item in commentaireList" :key="item.id">
             <b-card class="ml-auto mt-3" border-variant="secondary">
               <template v-slot:header>
-                <!-- header commentaire -->
                 <div class="comment_header">
                   <b-card-text class="small info_article">Publié par <span class="font-weight-bold" v-if="item.prenom != null && item.nom != null">{{ auteur(item.prenom, item.nom) }}</span>
                   <span class="font-weight-bold" v-if="item.prenom == null && item.nom == null">[Utilisateur indisponible]</span> le {{item.date_creation.split('T')[0]}} dans <router-link :to="{ name: 'LireArticle', params: { id: item.id_article }}">cet article</router-link>
                   </b-card-text>
-                  <b-dropdown variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
-                    <!-- actions possible -->
-                    <template v-slot:button-content>
-                      <span class="menu_texte">actions</span>
-                      <svg class="menu_svg" width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
-                    </template>
-                    <b-dropdown-item variant="danger" @click="suppressioncoms(item.id, item.id_utilisateur, item.id_parent)" v-if="userData.privilege == 'admin'">Supprimer</b-dropdown-item>
-                  </b-dropdown>
                 </div>
               </template>
-              <!-- contenu du commentaire -->
               <div class="small" v-html="item.contenu"></div>
             </b-card>               
           </div>
@@ -85,12 +93,17 @@
 </template>
 
 <script>
+  import articlepreview from "../components/articlePreview";
   import axios from 'axios';
 
   export default {
+  components: {
+    articlepreview
+  },
 	name: 'App',
   data() {
 		return {
+      articleList: [],
       commentaireList: [],
       commentaires: null,     
       userData: {
@@ -102,42 +115,24 @@
       },
       userAuth: false,
       datalist: 'article',
-      prenomUser: null,
-      nomUser: null
 		}
   },
   created() {
     // verification de la connexion
     axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
     .then((response) => {
-      if (response.data.privilege == 'admin') {
-        this.userAuth = true;
-        return this.userData = {
-          userId: response.data.userId,
-          prenom: response.data.prenom,
-          nom: response.data.nom,
-          email: response.data.email,
-          privilege: response.data.privilege
-        }
-      } else {
-        this.$router.push({ name: 'Accueil' });
+      this.userAuth = true;
+      this.userData = {
+        userId: response.data.userId,
+        prenom: response.data.prenom,
+        nom: response.data.nom,
+        email: response.data.email,
+        privilege: response.data.privilege
       }
+      return this.useractivity();
     })
     .catch(() => { 
       this.$router.push({ name: 'Connexion' });
-    })
-      
-    // recuperation des commentaires signalés
-    this.recupcoms();
-    
-    // Récuperation des du nom et prénom de l'utilisateur
-    axios.post('http://localhost:3000/api/pages/infos-utilisateur', {userId: this.$route.params.id}, { withCredentials: true })
-    .then((response) => {
-      this.prenomUser = response.data[0].prenom;
-      this.nomUser = response.data[0].nom;
-    })
-    .catch((error) => { 
-      console.log(error)
     })
   },
   methods: {
@@ -150,28 +145,35 @@
         console.log(error);
       })
     },
-    // suppression des commentaires
-    suppressioncoms(comId, auteurId, parentId) {
-      axios.post('http://localhost:3000/api/pages/supprimer-commentaire', {commentaireId: comId, auteurId: auteurId, parentId: parentId}, { withCredentials: true })
-      .then(() => {
-        this.recupcoms();
+    dataswap(type) {
+      if (type == 1) {
+        return this.datalist = 'article';
+      }
+      if (type == 2) {
+        return this.datalist = 'commentaire'
+      }
+    },
+    auteur(prenom, nom) {
+      return prenom+' '+nom;
+    },
+    useractivity() {
+      // Récuperation et affichage des articles
+      axios.post('http://localhost:3000/api/pages/article-utilisateur', {idUser: this.userData.userId}, { withCredentials: true })
+      .then((response) => {
+        this.articleList = response.data;
       })
       .catch((error) => { 
-        console.log(error);
-      }) 
-    },
-    // recuperation des commentaires
-    recupcoms() {
-      axios.get('http://localhost:3000/api/pages/commentaire-signale', { withCredentials: true })
+        console.log(error)
+      })
+      
+      // recuperation les commentaires de l'utilisateur
+      axios.post('http://localhost:3000/api/pages/commentaire-utilisateur', {idUser: this.userData.userId}, { withCredentials: true })
       .then((response) => { 
         return this.commentaireList = response.data;
       })
       .catch((error) => { 
         console.log(error)
       })
-    },
-    auteur(prenom, nom) {
-      return prenom+' '+nom;
     }
 	}
 }
@@ -254,14 +256,31 @@
   margin-bottom: 50px;
 }
 
-.comment_header {
+.header_utilisateur {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+.box_button_modal {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.box_button {
+  display: flex;
+  margin-bottom: 30px;
+}
+
 .box_contenu {
   width: 90%;
+}
+
+.swap_button {
+ width: 50%;
+ border-radius: 0;
+ font-size: 1.1em;
 }
 
 .button_delete {

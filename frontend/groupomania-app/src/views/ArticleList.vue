@@ -3,13 +3,30 @@
     <header class="header">
       <div class="box box_article">
         <router-link to="/creation">
-          <b-button class="btn_article" variant="primary">Poster un article</b-button>
+          <b-button class="btn_article" variant="primary">
+            <span class="texte_btn_article">
+              Poster un article
+            </span> 
+            <svg class="svg-icon svg_article" viewBox="0 0 20 20">
+              <path fill="white" d="M17.222,5.041l-4.443-4.414c-0.152-0.151-0.356-0.235-0.571-0.235h-8.86c-0.444,0-0.807,0.361-0.807,0.808v17.602c0,0.448,0.363,0.808,0.807,0.808h13.303c0.448,0,0.808-0.36,0.808-0.808V5.615C17.459,5.399,17.373,5.192,17.222,5.041zM15.843,17.993H4.157V2.007h7.72l3.966,3.942V17.993z"></path>
+              <path fill="white" d="M5.112,7.3c0,0.446,0.363,0.808,0.808,0.808h8.077c0.445,0,0.808-0.361,0.808-0.808c0-0.447-0.363-0.808-0.808-0.808H5.92C5.475,6.492,5.112,6.853,5.112,7.3z"></path>
+              <path fill="white" d="M5.92,5.331h4.342c0.445,0,0.808-0.361,0.808-0.808c0-0.446-0.363-0.808-0.808-0.808H5.92c-0.444,0-0.808,0.361-0.808,0.808C5.112,4.97,5.475,5.331,5.92,5.331z"></path>
+              <path fill="white" d="M13.997,9.218H5.92c-0.444,0-0.808,0.361-0.808,0.808c0,0.446,0.363,0.808,0.808,0.808h8.077c0.445,0,0.808-0.361,0.808-0.808C14.805,9.58,14.442,9.218,13.997,9.218z"></path>
+              <path fill="white" d="M13.997,11.944H5.92c-0.444,0-0.808,0.361-0.808,0.808c0,0.446,0.363,0.808,0.808,0.808h8.077c0.445,0,0.808-0.361,0.808-0.808C14.805,12.306,14.442,11.944,13.997,11.944z"></path>
+              <path fill="white" d="M13.997,14.67H5.92c-0.444,0-0.808,0.361-0.808,0.808c0,0.447,0.363,0.808,0.808,0.808h8.077c0.445,0,0.808-0.361,0.808-0.808C14.805,15.032,14.442,14.67,13.997,14.67z"></path>
+            </svg>
+          </b-button>
         </router-link>
       </div>
       
       <div class="box box_img d-none d-sm-block text-center">
         <router-link to="/accueil">
           <img src="../assets/icon-left-font-monochrome-white.png" alt="logo et nom de l'application">
+        </router-link>
+      </div>
+      <div class="box box_img_logo text-center">
+        <router-link to="/accueil">
+          <img src="../assets/icon.png" alt="logo et nom de l'application">
         </router-link>
       </div>
       
@@ -23,14 +40,14 @@
             </svg>
           </template>
           <b-dropdown-text>
-            <router-link :to="{ name: 'UserActivity', params: { id: userData.userId }}">{{ userData.prenom+" "+userData.nom }}
+            <router-link :to="{ name: 'me' }">{{ userData.prenom+" "+userData.nom }}
             </router-link></b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-text v-if='userData.privilege == "admin"'><router-link to="/signalement">Signalement</router-link></b-dropdown-text>
-          <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
           <b-dropdown-item>
             <router-link to="/compte">Détails du compte</router-link>
           </b-dropdown-item>
+          <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
         </b-dropdown>
       </div>
     </header>
@@ -79,7 +96,6 @@
           email: response.data.email,
           privilege: response.data.privilege
         }
-        console.log(this.userData)
       })
       .catch(() => { 
         this.$router.push({ name: 'Connexion' });
@@ -88,7 +104,6 @@
       // Récuperation et affichage des articles
       axios.get('http://localhost:3000/api/pages/articles', { withCredentials: true })
       .then((response) => {
-        console.log(response)
         this.apiResponse = response.data;
       })
       .catch((error) => { 
@@ -98,8 +113,7 @@
     methods: {
       deconnexion() {
         axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
-        .then((response) => {
-          console.log(response);
+        .then(() => {
           this.$router.push({ name: 'Connexion' });
         })
         .catch((error) => {
@@ -149,9 +163,20 @@
   align-self: center;
 }
 
-.header img {
-  width: 200px;
+.svg_article {
+  width: 29px;
 }
+
+.box_img img {
+  width: 170px;
+  height: 60px;
+  object-fit: cover;
+}
+
+.box_img_logo img {
+  width: 60px;
+}
+
 
 .bi-person-circle {
   width: 1.4em;
@@ -195,8 +220,17 @@
 
 /* media queries */
 @media screen and (max-width: 575px) {
-  .box_article {
-    flex: 2;
+  .texte_btn_article {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .box_img_logo {
+    display: none;
+  }
+  .svg_article {
+    display: none;
   }
 }
 </style>

@@ -1,16 +1,17 @@
 <template>
   <div id="app">
     <header class="header_auth">
-      <img class="d-none d-sm-block" src="../assets/icon-left-font-monochrome-white.png" alt="logo et nom de l'application">
+      <img src="../assets/icon-left-font-monochrome-white.png" alt="logo et nom de l'application">
       <nav class="auth_links">
-        <router-link to="/inscription"><button type="button" class="btn btn-secondary">Inscription</button></router-link>
         <router-link to="/connexion"><button type="button" class="btn btn-secondary">Connexion</button></router-link>
       </nav>
     </header>
 
     <main class="container">
-      <form class="form_auth needs-validation" novalidate>
-        <p class="h2">Inscription</p>
+      <b-card class="mx-auto" border-variant="secondary" header-border-variant="secondary">
+        <template #header>
+          <h4 class="h2">Inscription</h4>
+        </template>
         <!-- champ prénom -->
         <div class="form-group">
           <label for="Prenom">Prénom</label>
@@ -44,11 +45,11 @@
           <input v-model="password" type="password" class="form-control" id="password" placeholder="Votre mot de passe" required>
           <!-- message d'informations -->
           <b-form-text v-show="pwdValue != false" id="password-help-block">
-            Votre mot de passe doit contenir entre 6-50 caracters, contenir au moins une lettre majuscule, une minuscule, et un chiffre. Le mot de passe ne peut contenir que des chiffres et des lettres.
+            Votre mot de passe doit contenir entre 6-50 caracters, contenir au moins une lettre majuscule, minuscule, et un chiffre. Le mot de passe ne peut contenir que des chiffres et des lettres.
           </b-form-text>
           <!-- message d'erreur -->
           <b-card-text v-show="pwdValue == false" class="small text-danger info_article">
-            Votre mot de passe doit contenir entre 6-50 caracters, contenir au moins une lettre majuscule, une minuscule, et un chiffre. Le mot de passe ne peut contenir que des chiffres et des lettres.
+            Votre mot de passe doit contenir entre 6-50 caracters, contenir au moins une lettre majuscule, minuscule, et un chiffre. Le mot de passe ne peut contenir que des chiffres et des lettres.
           </b-card-text>
         </div>
         <!-- champ confirmation password -->
@@ -60,15 +61,19 @@
             Le mot de passe ne correspond pas
           </b-card-text>
         </div>
-        <!-- bouton de validation -->
-        <button @click="inscription()" class="btn btn-primary">M'inscrire</button>
-        <b-card-text v-show="errorMessage != null" class="small text-danger mt-2">
-          {{ errorMessage }}
-        </b-card-text>
-        <b-card-text v-show="validationMessage != null" class="small text-success mt-2">
-          {{ validationMessage }}
-        </b-card-text>
-      </form>
+        <div>
+          <!-- bouton de validation -->
+          <button @click="inscription()" class="btn btn-primary">M'inscrire</button>
+          <b-card-text v-show="errorMessage != null" class="small text-danger mt-2">
+            {{ errorMessage }}
+          </b-card-text>
+          <b-card-text v-show="validationMessage != null" class="small text-success mt-2">
+            {{ validationMessage }}
+          </b-card-text>          
+        </div>
+
+
+      </b-card>
     </main>
 
     <footer class="footer">
@@ -105,6 +110,7 @@
     })
   },
   methods: {
+    // validation des données, inscription et redirection vers l'accueil
     inscription() {
       let valid = true;
       this.errorMessage = null;
@@ -125,12 +131,10 @@
 
       for (let i = 0; i < inputValue.length; i++) {
         if (inputValue[i] == false) {
-          console.log(inputValue[i]);
           valid = false;
           return;
         }
       }
-
       if (valid == true) {
         axios.post('http://localhost:3000/api/auth/signup', {
           prenom: this.prenom,
@@ -138,8 +142,7 @@
           email: this.email,
           password: this.password
         }, { withCredentials: true })
-        .then((response) => {
-          console.log(response);
+        .then(() => {
           this.$router.push({ name: 'Accueil' });
         })
         .catch((error) => {
@@ -166,6 +169,7 @@
   margin-bottom: 100px;
 }
 
+/* header */
 .header_auth {
   width: 100%;
   height: 60px;
@@ -179,12 +183,10 @@
 }
 
 .header_auth img {
-  width: 200px;
+  width: 170px;
   margin-left: 15px;
-}
-
-.auth_links {
-  display: flex;
+  height: 60px;
+  object-fit: cover;
 }
 
 .auth_links > * {
@@ -192,12 +194,8 @@
   font-size: 1.2em;
 }
 
+/* body */
 .container {
-  display: flex;
-  justify-content: center;
-}
-
-.form_auth {
   width: 90%;
   max-width: 500px;
   min-width: 270px;
@@ -215,11 +213,5 @@
   font-size: 0.9em;
   position: fixed;
   bottom: 0px;
-}
-
-@media screen and (max-width: 575px) {
-  .header_auth {
-    justify-content: center;
-  }
 }
 </style>

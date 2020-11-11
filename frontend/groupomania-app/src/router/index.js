@@ -7,6 +7,7 @@ import PageCompte from '../views/Compte.vue'
 import CreationArticle from '../views/CreateArticle.vue'
 import LireArticle from '../views/ReadArticle.vue'
 import UserActivity from '../views/UserActivity.vue'
+import me from '../views/MyActivity.vue'
 import Signalement from '../views/Signalement.vue'
 
 Vue.use(VueRouter)
@@ -46,6 +47,11 @@ const routes = [
     path: '/utilisateur/:id',
     name: 'UserActivity',
     component: UserActivity
+  },
+  {
+    path: '/me',
+    name: 'me',
+    component: me
   },
   {
     path: '/signalement',

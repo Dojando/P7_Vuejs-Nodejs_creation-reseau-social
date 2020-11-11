@@ -3,13 +3,23 @@
     <header class="header">
       <div class="box box_retour">
         <router-link to="/accueil">
-          <b-button class="btn_accueil" variant="secondary">Retour à l'accueil</b-button>
+          <b-button class="btn_accueil" variant="secondary">
+            <span class="texte_accueil">Retour à l'accueil</span>
+            <svg class="svg-icon svg_accueil" viewBox="0 0 20 20" fill="white">
+							<path d="M18.121,9.88l-7.832-7.836c-0.155-0.158-0.428-0.155-0.584,0L1.842,9.913c-0.262,0.263-0.073,0.705,0.292,0.705h2.069v7.042c0,0.227,0.187,0.414,0.414,0.414h3.725c0.228,0,0.414-0.188,0.414-0.414v-3.313h2.483v3.313c0,0.227,0.187,0.414,0.413,0.414h3.726c0.229,0,0.414-0.188,0.414-0.414v-7.042h2.068h0.004C18.331,10.617,18.389,10.146,18.121,9.88 M14.963,17.245h-2.896v-3.313c0-0.229-0.186-0.415-0.414-0.415H8.342c-0.228,0-0.414,0.187-0.414,0.415v3.313H5.032v-6.628h9.931V17.245z M3.133,9.79l6.864-6.868l6.867,6.868H3.133z"></path>
+						</svg>
+          </b-button>
         </router-link>
       </div>
       
       <div class="box box_img d-none d-sm-block text-center">
         <router-link to="/accueil">
           <img src="../assets/icon-left-font-monochrome-white.png" alt="logo et nom de l'application">
+        </router-link>
+      </div>
+      <div class="box box_img_logo text-center">
+        <router-link to="/accueil">
+          <img src="../assets/icon.png" alt="logo et nom de l'application">
         </router-link>
       </div>
       
@@ -23,14 +33,14 @@
             </svg>
           </template>
           <b-dropdown-text>
-            <router-link :to="{ name: 'UserActivity', params: { id: userData.userId }}">{{ userData.prenom+" "+userData.nom }}
+            <router-link :to="{ name: 'me' }">{{ userData.prenom+" "+userData.nom }}
             </router-link></b-dropdown-text>
           <b-dropdown-divider></b-dropdown-divider>
           <b-dropdown-text v-if='userData.privilege == "admin"'><router-link to="/signalement">Signalement</router-link></b-dropdown-text>
-          <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
           <b-dropdown-item>
             <router-link to="/compte">Détails du compte</router-link>
           </b-dropdown-item>
+          <b-dropdown-item @click="deconnexion()">Déconnexion</b-dropdown-item>
         </b-dropdown>
       </div>
      
@@ -39,12 +49,16 @@
     <div class="container">
       <b-card class="details_compte mx-auto" border-variant="secondary" header="Détails du compte" header-border-variant="secondary">
         <b-list-group flush>
+          <!-- infos utilisateur -->
           <b-list-group-item><strong>Prenom : </strong>{{ userData.prenom }}</b-list-group-item>
           <b-list-group-item><strong>Nom : </strong>{{ userData.nom }}</b-list-group-item>
           <b-list-group-item><strong>Email : </strong>{{ userData.email }}</b-list-group-item>
+          <!-- bouton de deconnexion -->
           <b-list-group-item><b-button @click="deconnexion()">Deconnexion</b-button></b-list-group-item>
+          <!-- bouton de suppression de compte -->
           <b-list-group-item><b-button v-b-modal.modal-1 variant="danger">Supprimer le compte</b-button>
           </b-list-group-item>
+          <!-- fenetre de validation de suppression -->
           <b-modal id="modal-1" title="Suppression de compte">
           <p class="my-4">Voulez-vous vraiment supprimer votre compte ?</p>
           <template #modal-footer>
@@ -91,7 +105,6 @@
       email: response.data.email,
       privilege: response.data.privilege
     }
-    console.log(this.userData)
   })
   .catch(() => { 
     this.$router.push({ name: 'Connexion' });
@@ -100,8 +113,7 @@
   methods: {
   deconnexion() {
     axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
-    .then((response) => {
-      console.log(response);
+    .then(() => {
       this.$router.push({ name: 'Connexion' });
     })
     .catch((error) => {
@@ -110,8 +122,7 @@
   },
   suppression() {
     axios.get('http://localhost:3000/api/auth/suppression', { withCredentials: true })
-    .then((response) => {
-      console.log(response);
+    .then(() => {
       this.deconnexion();
     })
     .catch((error) => {
@@ -136,6 +147,7 @@
   margin-bottom: 100px;
 }
 
+/* header */
 .header {
   width: 100%;
   height: 60px;
@@ -160,12 +172,23 @@
   align-self: center;
 }
 
+.svg_accueil {
+  width: 30px;
+}
+
+.box_img_logo img {
+  width: 60px;
+  object-fit: cover;
+}
+
 .box_drop {
   justify-content: flex-end;  
 }
 
-.header img {
-  width: 200px;
+.box_img img {
+  width: 170px;
+  height: 60px;
+  object-fit: cover;
 }
 
 .bi-person-circle {
@@ -181,6 +204,7 @@
   margin-right: 10px;
 }
 
+/* body */
 .container * {
   margin-bottom: 5px;
 }
@@ -195,6 +219,7 @@
   max-width: 720px;
 }
 
+/* footer */
 .footer {
   width: 100%;
   height: 50px;
@@ -208,9 +233,19 @@
   bottom: 0px;
 }
 
+/* media queries */
 @media screen and (max-width: 575px) {
-  .box_article {
-    flex: 2;
+  .texte_accueil {
+    display: none;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .box_img_logo {
+    display: none;
+  }
+  .svg_accueil {
+    display: none;
   }
 }
 </style>
