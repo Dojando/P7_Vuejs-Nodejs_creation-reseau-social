@@ -35,6 +35,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors({
+  // adresse du frontend
   origin: 'http://localhost:8080',
   credentials: true,
 }))
