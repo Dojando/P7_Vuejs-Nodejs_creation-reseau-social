@@ -1,38 +1,9 @@
-const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
-const { response } = require('express');
-const db = mysql.createConnection({
-  host: process.env.DATABASE_HOST,
-  user: process.env.DATABASE_USER,
-  password: process.env.DATABASE_PASSWORD,
-  database: process.env.DATABASE
-});
-
-exports.verifConnexion = (req, res, next) => {
-  try {
-    if (req.cookies.authcookie == null) {
-      console.log("Utilisateur non authentifié");
-      return res.status(401).json({ error });
-    } else {
-      const token = req.cookies.authcookie;
-      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
-      return res.status(200).json(decodedToken);
-    }
-  } catch {
-    res.status(401).json({
-      error: new Error('erreur')
-    });
-  }
-};
-
-exports.deconnexion = (req, res, next) => {
-  res.clearCookie('authcookie');
-  return res.status(200).json({ message: "Utilisateur déconnecté" });
-};
+const db = require('./db');
 
 exports.posterArticle = (req, res, next) => {
   try {
-    if (req.cookies.authcookie == null) {
+    if (req.cookies.authcookie === null) {
       console.log("Utilisateur non authentifié");
       return res.status(401).json({ error });
     } else {
@@ -95,7 +66,7 @@ exports.listerArticlesUtilisateur = (req, res, next) => {
 
 exports.posterCommentaire = (req, res, next) => {
   try {
-    if (req.cookies.authcookie == null) {
+    if (req.cookies.authcookie === null) {
       console.log("Utilisateur non authentifié");
       return res.status(401).json({ error });
     } else {
@@ -158,14 +129,14 @@ exports.infosUtilisateur = (req, res, next) => {
 
 exports.supprimerCommentaire = (req, res, next) => {
   try {
-    if (req.cookies.authcookie == null) {
+    if (req.cookies.authcookie === null) {
       console.log("Utilisateur non authentifié");
       return res.status(401).json({ error });
     } else {
       const token = req.cookies.authcookie;
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
-      if(decodedToken.userId == req.body.auteurId || decodedToken.privilege == 'admin') {
-        if (req.body.parentId == null) {
+      if(decodedToken.userId === req.body.auteurId || decodedToken.privilege === 'admin') {
+        if (req.body.parentId === null) {
           db.query('DELETE FROM commentaires WHERE id = ? OR id_parent = ?', [req.body.commentaireId, req.body.commentaireId], function(error, results) {
             if (error) {
               console.log(error);
@@ -193,13 +164,13 @@ exports.supprimerCommentaire = (req, res, next) => {
 
 exports.supprimerArticle = (req, res, next) => {
   try {
-    if (req.cookies.authcookie == null) {
+    if (req.cookies.authcookie === null) {
       console.log("Utilisateur non authentifié");
       return res.status(401).json({ error });
     } else {
       const token = req.cookies.authcookie;
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
-      if(decodedToken.userId == req.body.auteurId || decodedToken.privilege == 'admin') {
+      if(decodedToken.userId === req.body.auteurId || decodedToken.privilege === 'admin') {
         db.query('DELETE FROM articles WHERE id = ?', [req.body.articleId], function(error, results) {
           if (error) {
             console.log(error);
@@ -252,29 +223,3 @@ exports.recupererCommentaireSignale = (req, res, next) => {
   }
 };
 
-exports.passerAdministrateur = (req, res, next) => {
-  try {
-    if (req.cookies.authcookie == null) {
-      console.log("Utilisateur non authentifié");
-      return res.status(401).json({ error });
-    } else {
-      const token = req.cookies.authcookie;
-      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
-      if(decodedToken.privilege == 'admin') {
-        db.query('UPDATE utilisateurs SET privilege = "admin" WHERE id = ?', [req.body.idUser], function(error, results) {
-          if (error) {
-            console.log(error);
-          }
-          return res.status(200).json(results);
-        })        
-      } else {
-        return res.status(401).json({ error });
-      }      
-    }
-
-  } catch {
-    res.status(401).json({
-      error: new Error('erreur')
-    });
-  }
-};

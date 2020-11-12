@@ -104,10 +104,8 @@
     }
   },
   created() {
-    axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
-    .then(() => {
-      this.$router.push({ name: 'Accueil' });
-    })
+    axios.get('http://localhost:3000/api/auth/auth-verif', { withCredentials: true })
+    .then(() => this.$router.push({ name: 'Accueil' }))
   },
   methods: {
     // validation des données, inscription et redirection vers l'accueil
@@ -122,29 +120,24 @@
       this.nomValue = regex_nom_prenom.test(this.nom);
       this.emailValue = regex_email.test(this.email);
       this.pwdValue = regex_pwd.test(this.password);
-      if (this.password !== this.confpassword) {
-        this.confpwdValue = false;
-      } else {
-        this.confpwdValue = true;
-      }
-      let inputValue = [this.prenomValue, this.nomValue, this.emailValue, this.pwdValue, this.confpwdValue];
+      this.confpwdValue = this.password === this.confpassword;
+
+      const inputValue = [this.prenomValue, this.nomValue, this.emailValue, this.pwdValue, this.confpwdValue];
 
       for (let i = 0; i < inputValue.length; i++) {
-        if (inputValue[i] == false) {
+        if (inputValue[i] === false) {
           valid = false;
           return;
         }
       }
-      if (valid == true) {
+      if (valid) {
         axios.post('http://localhost:3000/api/auth/signup', {
           prenom: this.prenom,
           nom: this.nom,
           email: this.email,
           password: this.password
         }, { withCredentials: true })
-        .then(() => {
-          this.$router.push({ name: 'Accueil' });
-        })
+        .then(() => this.$router.push({ name: 'Accueil' }))
         .catch((error) => {
           console.log(error);
           this.errorMessage = error.response.data.message;

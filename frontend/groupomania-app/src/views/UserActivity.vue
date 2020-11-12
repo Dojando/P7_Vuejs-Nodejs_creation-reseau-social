@@ -5,9 +5,7 @@
         <router-link to="/accueil">
           <b-button class="btn_accueil" variant="secondary">
             <span class="texte_accueil">Retour à l'accueil</span>
-            <svg class="svg-icon svg_accueil" viewBox="0 0 20 20" fill="white">
-							<path d="M18.121,9.88l-7.832-7.836c-0.155-0.158-0.428-0.155-0.584,0L1.842,9.913c-0.262,0.263-0.073,0.705,0.292,0.705h2.069v7.042c0,0.227,0.187,0.414,0.414,0.414h3.725c0.228,0,0.414-0.188,0.414-0.414v-3.313h2.483v3.313c0,0.227,0.187,0.414,0.413,0.414h3.726c0.229,0,0.414-0.188,0.414-0.414v-7.042h2.068h0.004C18.331,10.617,18.389,10.146,18.121,9.88 M14.963,17.245h-2.896v-3.313c0-0.229-0.186-0.415-0.414-0.415H8.342c-0.228,0-0.414,0.187-0.414,0.415v3.313H5.032v-6.628h9.931V17.245z M3.133,9.79l6.864-6.868l6.867,6.868H3.133z"></path>
-						</svg> 
+            <logoaccueil></logoaccueil> 
           </b-button>
         </router-link>
       </div>
@@ -26,11 +24,7 @@
       <div class="box box_drop">
         <b-dropdown id="dropdown" right class="m-md-2 btn_compte">
           <template v-slot:button-content>
-            <svg viewBox="0 0 16 16" class="bi bi-person-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z"/>
-              <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-              <path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/>
-            </svg>
+            <logouser></logouser>
           </template>
           <b-dropdown-text>
             <router-link :to="{ name: 'me' }">{{ userData.prenom+" "+userData.nom }}
@@ -57,7 +51,7 @@
           <b-dropdown v-if="userData.privilege == 'admin' && prenomUser != null && nomUser != null && privilegeUser != 'admin'" variant="outline-secondary" size="sm" id="dropdown" right class="btn_compte">
             <template v-slot:button-content>
               <span class="menu_texte">actions</span>
-              <svg class="menu_svg" width="24" height="24"><path fill="black" d="M6 10a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm12 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2zm-6 0a2 2 0 00-2 2c0 1.1.9 2 2 2a2 2 0 002-2 2 2 0 00-2-2z" fill-rule="nonzero"></path></svg>
+              <logoactions></logoactions>
             </template>
             <b-dropdown-item v-b-modal.modal-1 variant="danger" v-if="userData.privilege == 'admin'">Passer Administrateur</b-dropdown-item>
             <b-modal id="modal-1" title="Passer Administrateur">
@@ -112,10 +106,16 @@
 <script>
   import articlepreview from "../components/articlePreview";
   import axios from 'axios';
+  import logoaccueil from '../components/logo_accueil';
+  import logoactions from '../components/logo_actions';
+  import logouser from "../components/logo_user";
 
   export default {
   components: {
-    articlepreview
+    articlepreview,
+    logoaccueil,
+    logoactions,
+    logouser
   },
 	name: 'App',
   data() {
@@ -140,7 +140,7 @@
   },
   created() {
     // verification de la connexion
-    axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
+    axios.get('http://localhost:3000/api/auth/auth-verif', { withCredentials: true })
     .then((response) => {
       this.userAuth = true;
       return this.userData = {
@@ -159,7 +159,7 @@
   },
   methods: {
     deconnexion() {
-      axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
+      axios.get('http://localhost:3000/api/auth/deconnexion', { withCredentials: true })
       .then(() => {
         this.$router.push({ name: 'Connexion' });
       })
@@ -177,7 +177,7 @@
     },
     // faire passer administrateur un utilisateur basique
     passeradmin() {
-      axios.post('http://localhost:3000/api/pages/passer-admin', {idUser: this.idUser}, { withCredentials: true })
+      axios.post('http://localhost:3000/api/auth/passer-admin', {idUser: this.idUser}, { withCredentials: true })
       .then(() => {
         return window.alert("L'utilisateur est maintenant Administrateur");
       })

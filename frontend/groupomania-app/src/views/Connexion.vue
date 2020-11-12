@@ -68,7 +68,7 @@
   },
   created() {
     // si l'utilisateur a deja un token valide, redirection vers l'accueil
-    axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
+    axios.get('http://localhost:3000/api/auth/auth-verif', { withCredentials: true })
     .then(() => {
       this.$router.push({ name: 'Accueil' });
     })

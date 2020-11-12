@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
   try {
-    if (req.cookies.authcookie == null) {
+    if (req.cookies.authcookie === null) {
       console.log("Utilisateur non authentifié");
       return res.status(401).json({ error });
     } else {

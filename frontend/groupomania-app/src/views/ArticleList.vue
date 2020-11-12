@@ -7,14 +7,7 @@
             <span class="texte_btn_article">
               Poster un article
             </span> 
-            <svg class="svg-icon svg_article" viewBox="0 0 20 20">
-              <path fill="white" d="M17.222,5.041l-4.443-4.414c-0.152-0.151-0.356-0.235-0.571-0.235h-8.86c-0.444,0-0.807,0.361-0.807,0.808v17.602c0,0.448,0.363,0.808,0.807,0.808h13.303c0.448,0,0.808-0.36,0.808-0.808V5.615C17.459,5.399,17.373,5.192,17.222,5.041zM15.843,17.993H4.157V2.007h7.72l3.966,3.942V17.993z"></path>
-              <path fill="white" d="M5.112,7.3c0,0.446,0.363,0.808,0.808,0.808h8.077c0.445,0,0.808-0.361,0.808-0.808c0-0.447-0.363-0.808-0.808-0.808H5.92C5.475,6.492,5.112,6.853,5.112,7.3z"></path>
-              <path fill="white" d="M5.92,5.331h4.342c0.445,0,0.808-0.361,0.808-0.808c0-0.446-0.363-0.808-0.808-0.808H5.92c-0.444,0-0.808,0.361-0.808,0.808C5.112,4.97,5.475,5.331,5.92,5.331z"></path>
-              <path fill="white" d="M13.997,9.218H5.92c-0.444,0-0.808,0.361-0.808,0.808c0,0.446,0.363,0.808,0.808,0.808h8.077c0.445,0,0.808-0.361,0.808-0.808C14.805,9.58,14.442,9.218,13.997,9.218z"></path>
-              <path fill="white" d="M13.997,11.944H5.92c-0.444,0-0.808,0.361-0.808,0.808c0,0.446,0.363,0.808,0.808,0.808h8.077c0.445,0,0.808-0.361,0.808-0.808C14.805,12.306,14.442,11.944,13.997,11.944z"></path>
-              <path fill="white" d="M13.997,14.67H5.92c-0.444,0-0.808,0.361-0.808,0.808c0,0.447,0.363,0.808,0.808,0.808h8.077c0.445,0,0.808-0.361,0.808-0.808C14.805,15.032,14.442,14.67,13.997,14.67z"></path>
-            </svg>
+            <logoarticle></logoarticle>
           </b-button>
         </router-link>
       </div>
@@ -33,11 +26,7 @@
       <div class="box box_drop">
         <b-dropdown id="dropdown" right class="m-md-2 btn_compte">
           <template v-slot:button-content>
-            <svg viewBox="0 0 16 16" class="bi bi-person-circle" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M13.468 12.37C12.758 11.226 11.195 10 8 10s-4.757 1.225-5.468 2.37A6.987 6.987 0 0 0 8 15a6.987 6.987 0 0 0 5.468-2.63z"/>
-              <path fill-rule="evenodd" d="M8 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-              <path fill-rule="evenodd" d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1zM0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8z"/>
-            </svg>
+            <logouser></logouser>
           </template>
           <b-dropdown-text>
             <router-link :to="{ name: 'me' }">{{ userData.prenom+" "+userData.nom }}
@@ -65,11 +54,15 @@
 
 <script>
   import articlepreview from "../components/articlePreview";
+  import logoarticle from "../components/logo_article";
+  import logouser from "../components/logo_user";
   import axios from 'axios';
 
   export default {
     components: {
-      articlepreview
+      articlepreview,
+      logoarticle,
+      logouser
     },
     data() {
       return {
@@ -86,7 +79,7 @@
     },
     created() {
       // vérification de l'authentification
-      axios.get('http://localhost:3000/api/pages/auth-verif', { withCredentials: true })
+      axios.get('http://localhost:3000/api/auth/auth-verif', { withCredentials: true })
       .then((response) => {
         this.userAuth = true;
         this.userData = {
@@ -112,7 +105,7 @@
     },
     methods: {
       deconnexion() {
-        axios.get('http://localhost:3000/api/pages/deconnexion', { withCredentials: true })
+        axios.get('http://localhost:3000/api/auth/deconnexion', { withCredentials: true })
         .then(() => {
           this.$router.push({ name: 'Connexion' });
         })
