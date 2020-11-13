@@ -106,7 +106,17 @@ exports.verifConnexion = (req, res, next) => {
     } else {
       const token = req.cookies.authcookie;
       const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
-      return res.status(200).json(decodedToken);
+      db.query('SELECT id FROM utilisateurs WHERE id = ?', [decodedToken.userId], function(error, results) {
+        if (error) {
+          console.log(error);
+        }
+        if (results.length < 1) {
+          return res.status(401).json({ error });
+        }
+        if (results.length === 1) {
+          return res.status(200).json(decodedToken);
+        }
+      })
     }
   } catch {
     res.status(401).json({
