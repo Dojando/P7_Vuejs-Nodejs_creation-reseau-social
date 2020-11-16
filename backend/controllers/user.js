@@ -47,13 +47,13 @@ exports.login = (req, res, next) => {
       console.log(error);
     }
     if (results.length === 0) {
-      return res.status(401).json({ message: 'Données invalides' });
+      return res.status(400).json({ message: 'Données invalides' });
     } else {
       const userData = results[0];
       bcrypt.compare(password, userData.mot_de_passe)
         .then(valid => {
           if (!valid) {
-            return res.status(401).json({ message: 'Données invalides' });
+            return res.status(400).json({ message: 'Données invalides' });
           } else {
             const token = jwt.sign(
               { 
@@ -92,7 +92,7 @@ exports.suppression = (req, res, next) => {
       })
     }
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -111,7 +111,7 @@ exports.verifConnexion = (req, res, next) => {
           console.log(error);
         }
         if (results.length < 1) {
-          return res.status(401).json({ error });
+          return res.status(404).json({ error });
         }
         if (results.length === 1) {
           return res.status(200).json(decodedToken);
@@ -119,10 +119,15 @@ exports.verifConnexion = (req, res, next) => {
       })
     }
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
+};
+
+exports.authRedirection = (req, res, next) => {
+  let usercookie = req.cookies.authcookie;
+  return res.status(200).json(usercookie);
 };
 
 exports.deconnexion = (req, res, next) => {
@@ -146,12 +151,11 @@ exports.passerAdministrateur = (req, res, next) => {
           return res.status(200).json(results);
         })        
       } else {
-        return res.status(401).json({ error });
+        return res.status(501).json({ error });
       }      
     }
-
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }

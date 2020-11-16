@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import connexion from '../views/Connexion.vue'
+import PageIntrouvable from '../views/Connexion.vue'
 import inscription from '../views/Inscription.vue'
 import ArticleList from '../views/ArticleList.vue'
 import PageCompte from '../views/Compte.vue'
@@ -57,6 +58,11 @@ const routes = [
     path: '/signalement',
     name: 'Signalement',
     component: Signalement
+  },
+  {
+    path: '*',
+    name: 'PageIntrouvable',
+    component: PageIntrouvable
   },
 ]
 

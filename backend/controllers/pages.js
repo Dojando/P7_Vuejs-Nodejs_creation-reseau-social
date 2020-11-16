@@ -13,7 +13,7 @@ exports.posterArticle = (req, res, next) => {
       return res.status(200).json({ message: "Article publié" });
     }
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -28,7 +28,7 @@ exports.lireArticle = (req, res, next) => {
       return res.status(200).json(results);
     })
     } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -43,7 +43,7 @@ exports.listerArticles = (req, res, next) => {
       return res.status(200).json(results);
     })
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -58,7 +58,7 @@ exports.listerArticlesUtilisateur = (req, res, next) => {
       return res.status(200).json(results);
     })
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -76,7 +76,7 @@ exports.posterCommentaire = (req, res, next) => {
       return res.status(200).json({ message: "Commentaire publié" });
     }
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -91,7 +91,7 @@ exports.recupererCommentaire = (req, res, next) => {
       return res.status(200).json(results);
     })
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -106,7 +106,7 @@ exports.recupererCommentaireUtilisateur = (req, res, next) => {
       return res.status(200).json(results);
     })
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -121,7 +121,7 @@ exports.infosUtilisateur = (req, res, next) => {
       return res.status(200).json(results);
     })
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -152,11 +152,11 @@ exports.supprimerCommentaire = (req, res, next) => {
           })
         }
       } else {
-        return res.status(401).json({ error });
+        return res.status(501).json({ error });
       }      
     }
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -183,11 +183,11 @@ exports.supprimerArticle = (req, res, next) => {
           })
         })
       } else {
-        return res.status(401).json({ error });
+        return res.status(501).json({ error });
       }      
     }
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -202,7 +202,7 @@ exports.signalerCommentaire = (req, res, next) => {
       return res.status(200).json(results);
     })
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }
@@ -217,7 +217,7 @@ exports.recupererCommentaireSignale = (req, res, next) => {
       return res.status(200).json(results);
     })
   } catch {
-    res.status(401).json({
+    res.status(500).json({
       error: new Error('erreur')
     });
   }

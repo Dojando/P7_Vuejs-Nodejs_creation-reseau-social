@@ -340,7 +340,7 @@
   width: 100%;
   height: 50px;
   background-color: rgb(42, 46, 90);
-  color: rgb(228, 82, 82);
+  color: rgb(240, 116, 116);
   display: flex;
   justify-content: center;
   align-items: center;

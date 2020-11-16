@@ -3,7 +3,7 @@
     <header class="header">
       <div class="box box_article">
         <router-link to="/creation">
-          <b-button class="btn_article" variant="primary">
+          <b-button class="btn_article">
             <span class="texte_btn_article">
               Poster un article
             </span> 
@@ -178,6 +178,7 @@
 
 .btn_article {
   margin-left: 10px;
+  background-color: rgb(15, 84, 231);
 }
 
 .box_drop {
@@ -202,7 +203,7 @@
   width: 100%;
   height: 50px;
   background-color: rgb(42, 46, 90);
-  color: rgb(228, 82, 82);
+  color: rgb(240, 116, 116);
   display: flex;
   justify-content: center;
   align-items: center;

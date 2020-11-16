@@ -104,8 +104,12 @@
     }
   },
   created() {
-    axios.get('http://localhost:3000/api/auth/auth-verif', { withCredentials: true })
-    .then(() => this.$router.push({ name: 'Accueil' }))
+    axios.get('http://localhost:3000/api/auth/auth-redirection', { withCredentials: true })
+    .then((result) => {
+      if (result.data.length !== 0) {
+        this.$router.push({ name: 'Accueil' });
+      }
+    })
   },
   methods: {
     // validation des données, inscription et redirection vers l'accueil
@@ -199,7 +203,7 @@
   width: 100%;
   height: 50px;
   background-color: rgb(42, 46, 90);
-  color: rgb(228, 82, 82);
+  color: rgb(240, 116, 116);
   display: flex;
   justify-content: center;
   align-items: center;
