@@ -18,7 +18,7 @@ DATABASE_PASSWORD = le mot de passe de l'admin de la base de données
 A présent, pour faire fonctionner le site, vous devez lancez 'npm start' dans un terminal depuis la racine du dossier backend, ensuite, lancez 'npm run serve' dans un terminal depuis la racine du dossier frontend.
 
 **5. Acceder au site :**  
-Vous pouvez à présent accéder au site depuis l'url présente dans le terminal frontend : http://localhost:8080/
+Vous pouvez à présent accéder au site depuis l'url présent dans le terminal frontend : http://localhost:8080/
 
 **Administration du site :**  
 Pour donner les droits administrateur à un utilisateur dans le site, vous devez directement changer la valeur de la colonne 'privilege' de l'utilisateur dans la base de données pour 'admin'.
