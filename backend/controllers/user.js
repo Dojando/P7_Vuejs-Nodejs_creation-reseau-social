@@ -126,8 +126,28 @@ exports.verifConnexion = (req, res, next) => {
 };
 
 exports.authRedirection = (req, res, next) => {
-  let usercookie = req.cookies.authcookie;
-  return res.status(200).json(usercookie);
+  try {
+    if (req.cookies.authcookie === null) {
+      console.log("Utilisateur non authentifié");
+      return res.status(202).json(false);
+    } else {
+      const token = req.cookies.authcookie;
+      const decodedToken = jwt.verify(token, process.env.TOKEN_KEY);
+      db.query('SELECT id FROM utilisateurs WHERE id = ?', [decodedToken.userId], function(error, results) {
+        if (error) {
+          console.log(error);
+        }
+        if (results.length < 1) {
+          return res.status(202).json(false);
+        }
+        if (results.length === 1) {
+          return res.status(200).json(true);
+        }
+      })
+    }
+  } catch {
+    return res.status(202).json(false);
+  }
 };
 
 exports.deconnexion = (req, res, next) => {

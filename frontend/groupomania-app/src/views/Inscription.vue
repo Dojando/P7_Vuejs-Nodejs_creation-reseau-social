@@ -106,7 +106,7 @@
   created() {
     axios.get('http://localhost:3000/api/auth/auth-redirection', { withCredentials: true })
     .then((result) => {
-      if (result.data.length !== 0) {
+      if (result.data === true) {
         this.$router.push({ name: 'Accueil' });
       }
     })

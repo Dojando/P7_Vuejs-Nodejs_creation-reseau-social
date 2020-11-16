@@ -70,7 +70,7 @@
     // si l'utilisateur a deja un token valide, redirection vers l'accueil
     axios.get('http://localhost:3000/api/auth/auth-redirection', { withCredentials: true })
     .then((result) => {
-      if (result.data.length !== 0) {
+      if (result.data === true) {
         this.$router.push({ name: 'Accueil' });
       }
     })
