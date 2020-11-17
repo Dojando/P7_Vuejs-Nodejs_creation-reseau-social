@@ -32,14 +32,14 @@
         </div>
         <div>
           <!-- bouton de validation -->
-          <button @click="connexion()" class="btn btn-primary">Me connecter</button>
+          <button @click="connexion()" class="btn btn_connexion">Me connecter</button>
           <b-card-text v-show="errorMessage != null" class="small text-danger mt-2">
             {{ errorMessage }}
           </b-card-text>            
         </div>
       </b-card>
       <b-card-text class="mt-3 text-center">
-        <router-link to="/inscription">
+        <router-link class="lien_inscription" to="/inscription">
           Pas de compte ? Inscrivez-vous ici !
         </router-link>
       </b-card-text> 
@@ -151,6 +151,15 @@
   width: 90%;
   max-width: 500px;
   min-width: 270px;
+}
+
+.btn_connexion {
+  background-color: rgb(15, 84, 231);
+  color: white;
+}
+
+.lien_inscription {
+  color: rgb(15, 84, 231);
 }
 
 /* Footer */

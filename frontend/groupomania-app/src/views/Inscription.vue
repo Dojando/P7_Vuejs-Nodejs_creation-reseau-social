@@ -63,7 +63,7 @@
         </div>
         <div>
           <!-- bouton de validation -->
-          <button @click="inscription()" class="btn btn-primary">M'inscrire</button>
+          <button @click="inscription()" class="btn btn_inscription">M'inscrire</button>
           <b-card-text v-show="errorMessage != null" class="small text-danger mt-2">
             {{ errorMessage }}
           </b-card-text>
@@ -196,6 +196,11 @@
   width: 90%;
   max-width: 500px;
   min-width: 270px;
+}
+
+.btn_inscription {
+  background-color: rgb(15, 84, 231);
+  color: white;
 }
 
 /* Footer */

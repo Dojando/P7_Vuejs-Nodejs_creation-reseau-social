@@ -84,7 +84,7 @@
           <editor v-model="commentaireContenu" class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
         </div>
         <div class="poster_commentaire">
-          <button @click="commentaire()" class="btn btn-primary btn_commentaire">Poster</button>
+          <button @click="commentaire()" class="btn btn_poster btn_commentaire">Poster</button>
           <div v-show="errorMessageCommentaire != null" class="small text-danger mt-2">
             {{ errorMessageCommentaire }}
           </div>
@@ -124,7 +124,7 @@
                 <div class="form-group">
                   <editor v-model="reponseContenu" class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}"></editor>
                 </div>
-                <button @click="reponse(parent.id)" class="btn btn-primary">Poster</button>
+                <button @click="reponse(parent.id)" class="btn btn_poster">Poster</button>
                 <div v-show="errorMessageReponse != null" class="small text-danger mt-2">
                   {{ errorMessageReponse }}
                 </div>
@@ -495,6 +495,11 @@ import logouser from "../components/logo_user";
 
 .btn_commentaire {
   margin-top: 15px;
+}
+
+.btn_poster {
+  background-color: rgb(15, 84, 231);
+  color: white;
 }
 
 /* Footer */

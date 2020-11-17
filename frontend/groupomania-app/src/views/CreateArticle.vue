@@ -56,7 +56,7 @@
           <editor class="form-control"  api-key="t0lyy2w9xjl7fm5l99qahx4lahn2fkvhzk3wixfdg0mlv8ee" :init="{menubar: false}" v-model="articleData.contenu"></editor>
         </div>
         <!-- bouton de publication de l'article -->
-        <button @click="publier()" type="submit" class="btn btn-primary">Poster</button>
+        <button @click="publier()" type="submit" class="btn btn_article">Poster</button>
         <div v-show="errorMessage != null" class="small text-danger mt-2">
           {{ errorMessage }}
         </div>
@@ -221,6 +221,11 @@ import logouser from "../components/logo_user";
 
 .btn_compte {
   margin-right: 10px;
+}
+
+.btn_article {
+  background-color: rgb(15, 84, 231);
+  color: white;
 }
 
 /* body */
