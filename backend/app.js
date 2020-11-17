@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const helmet = require("helmet");
 const cors = require('cors');
 const mysql = require('mysql');
 const app = express();
@@ -40,6 +41,7 @@ app.use(cors({
   credentials: true,
 }))
 
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(cookieParser());
 
