@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `groupomaniadb` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `groupomaniadb`;
 -- MySQL dump 10.13  Distrib 8.0.21, for Win64 (x86_64)
 --
 -- Host: localhost    Database: groupomaniadb
@@ -30,8 +28,10 @@ CREATE TABLE `articles` (
   `contenu` longtext NOT NULL,
   `date_creation` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `id_utilisateur` int NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`),
+  KEY `fk_user_article_id` (`id_utilisateur`),
+  CONSTRAINT `fk_user_article_id` FOREIGN KEY (`id_utilisateur`) REFERENCES `utilisateurs` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -49,8 +49,12 @@ CREATE TABLE `commentaires` (
   `id_article` int NOT NULL,
   `id_parent` int DEFAULT NULL,
   `signaler` tinyint DEFAULT '0',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=58 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  PRIMARY KEY (`id`),
+  KEY `fk_user_com_id` (`id_utilisateur`),
+  KEY `fk_article_com_id` (`id_article`),
+  CONSTRAINT `fk_article_com_id` FOREIGN KEY (`id_article`) REFERENCES `articles` (`id`),
+  CONSTRAINT `fk_user_com_id` FOREIGN KEY (`id_utilisateur`) REFERENCES `utilisateurs` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -69,7 +73,7 @@ CREATE TABLE `utilisateurs` (
   `privilege` varchar(45) NOT NULL DEFAULT 'basic',
   PRIMARY KEY (`id`),
   UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -81,4 +85,4 @@ CREATE TABLE `utilisateurs` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-11-10 20:38:37
+-- Dump completed on 2020-11-17 23:42:48
