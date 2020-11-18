@@ -18,6 +18,26 @@ USE `groupomaniadb`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `utilisateurs`
+--
+
+DROP TABLE IF EXISTS `utilisateurs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `utilisateurs` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `prenom` varchar(100) NOT NULL,
+  `nom` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `mot_de_passe` varchar(255) NOT NULL,
+  `privilege` varchar(45) NOT NULL DEFAULT 'basic',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email_UNIQUE` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+--
 -- Table structure for table `articles`
 --
 
@@ -58,26 +78,6 @@ CREATE TABLE `commentaires` (
   CONSTRAINT `fk_user_com_id` FOREIGN KEY (`id_utilisateur`) REFERENCES `utilisateurs` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `utilisateurs`
---
-
-DROP TABLE IF EXISTS `utilisateurs`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `utilisateurs` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `prenom` varchar(100) NOT NULL,
-  `nom` varchar(100) NOT NULL,
-  `email` varchar(100) NOT NULL,
-  `mot_de_passe` varchar(255) NOT NULL,
-  `privilege` varchar(45) NOT NULL DEFAULT 'basic',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
